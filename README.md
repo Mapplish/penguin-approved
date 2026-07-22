@@ -17,3 +17,5 @@ The project aims to:
 No cloud.
 No subscriptions.
 Just data.
+
+🐧 Penguin Approved – Development started on 2026-07-22.
