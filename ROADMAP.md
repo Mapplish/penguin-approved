@@ -1,43 +1,46 @@
-🐣 Little Penguin
+# 🐧 Penguin Approved Roadmap
+
+## 🐣 Little Penguin
 
 Project setup
 
-⬜ Documentation
-⬜ Git
-⬜ Dashboard
+- Git
+- Documentation
+- Architecture
+- Home Assistant structure
 
------------------------
+---
 
-🐧 Emperor
+## 🐧 Emperor
 
-eBUS
+Heat pump integration
 
-⬜ Adapter
-⬜ Home Assistant
-⬜ Sensors
+- eBUS
+- Dashboard
+- Live data
 
------------------------
+---
 
-👑 King Penguin
+## 👑 King Penguin
 
-Data Collection
+Data collection
 
-⬜ Long-term statistics
-⬜ Thermal model
-⬜ COP
+- Long-term statistics
+- COP monitoring
+- Thermal analysis
 
------------------------
+---
 
-🚀 Happy Feet
+## 🚀 Happy Feet
 
-Optimizer
+Optimization
 
-⬜ Hydraulic balancing
-⬜ Cooling optimization
-⬜ Recommendations
+- Hydraulic balancing
+- Heating recommendations
+- Cooling recommendations
 
------------------------
+---
 
-🐧 Penguin Approved
+## 🐧 Penguin Approved
 
 Self-learning heating optimization
