@@ -1,0 +1,495 @@
+- id: '1735237289040'
+  alias: Open Cover at Dawn
+  triggers:
+  - entity_id: sun.sun
+    attribute: next_dawn
+    trigger: state
+  actions:
+  - target:
+      entity_id: cover.buero_shelly
+    action: cover.open_cover
+  mode: single
+- id: '1735237412431'
+  alias: Close Cover at Dusk
+  triggers:
+  - entity_id: sun.sun
+    attribute: next_dusk
+    trigger: state
+  actions:
+  - target:
+      entity_id: cover.buero_shelly
+    action: cover.close_cover
+  mode: single
+- id: '1736343189535'
+  alias: Set Battery Max Discharge to 1000W Before Dusk
+  description: ''
+  triggers:
+  - event: sunset
+    offset: -01:00:00
+    trigger: sun
+  actions:
+  - data:
+      entity_id: input_number.set_sg_battery_max_discharge_power
+      value: 500
+    action: input_number.set_value
+  mode: single
+- id: '1736343260882'
+  alias: Set Battery Max Discharge to 100W After Dawn
+  description: ''
+  triggers:
+  - event: sunrise
+    offset: 01:00:00
+    trigger: sun
+  actions:
+  - data:
+      entity_id: input_number.set_sg_battery_max_discharge_power
+      value: 5000
+    action: input_number.set_value
+  mode: single
+- id: '1753012277432'
+  alias: Close Covers ALL
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - action: cover.close_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.rollos_all
+  mode: single
+- id: '1753012610804'
+  alias: Open Covers ALL
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - action: cover.open_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.rollos_all
+  mode: single
+- id: '1753207394211'
+  alias: Close Cover BACK
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - action: cover.close_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.rollos_back
+  mode: single
+- id: '1753207432113'
+  alias: Open Covers BACK
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - action: cover.open_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.rollos_back
+  mode: single
+- id: '1756462434295'
+  alias: Rollo EG Open
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - action: cover.open_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.rollos_eg
+  mode: single
+- id: '1756462483663'
+  alias: Rollo EG close
+  description: ''
+  triggers: []
+  conditions: []
+  actions:
+  - action: cover.close_cover
+    metadata: {}
+    data: {}
+    target:
+      entity_id: cover.rollos_eg
+  mode: single
+- id: '1764345077517'
+  alias: Weihnachtsbeleuchtung an
+  description: ''
+  triggers:
+  - trigger: time
+    at: '17:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  - trigger: time
+    at: 06:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - type: turn_on
+    device_id: 8ca3369b0752a55e4f72e2a0dd8bba0b
+    entity_id: 8728bf30a61737a37ed4bd02f7d12226
+    domain: switch
+  mode: single
+- id: '1764345174084'
+  alias: Weihnachtsbeleuchtung aus
+  description: ''
+  triggers:
+  - trigger: time
+    at: '22:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  - trigger: time
+    at: 08:30:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 8ca3369b0752a55e4f72e2a0dd8bba0b
+    entity_id: 8728bf30a61737a37ed4bd02f7d12226
+    domain: switch
+  mode: single
+- id: '1766943966144'
+  alias: Urlaub Rollo Open
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - device_id: c7127ab0fddb1b80dce114c0dcac04e4
+    domain: cover
+    entity_id: cb2e0f0b8f1aabf23df5a8e7e70f69c0
+    type: open
+  - device_id: a1a718ff21e6a3cda0ba8eacc30b647e
+    domain: cover
+    entity_id: f29e04749fb19080593796ff92f7cac6
+    type: open
+  mode: single
+- id: '1766944012770'
+  alias: Urlaub Rollo close
+  description: ''
+  triggers:
+  - trigger: time
+    at: '19:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - device_id: c7127ab0fddb1b80dce114c0dcac04e4
+    domain: cover
+    entity_id: cb2e0f0b8f1aabf23df5a8e7e70f69c0
+    type: close
+  mode: single
+- id: '1767350525494'
+  alias: Notification - Eingang offen
+  description: ''
+  triggers:
+  - type: opened
+    device_id: 156f2f8a6de85f1680defdb7f209aa65
+    entity_id: c81f61ea388c0cd5ad540a3496efc4d9
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - device_id: 5c36e49a9468cdbf3d37567c049ffde9
+    domain: mobile_app
+    type: notify
+    message: Eingang offen
+    title: Eingang offen
+  mode: single
+- id: '1767350553660'
+  alias: Notification - Eingang geschlossen
+  description: ''
+  triggers:
+  - type: not_opened
+    device_id: 156f2f8a6de85f1680defdb7f209aa65
+    entity_id: c81f61ea388c0cd5ad540a3496efc4d9
+    domain: binary_sensor
+    trigger: device
+  conditions: []
+  actions:
+  - device_id: 5c36e49a9468cdbf3d37567c049ffde9
+    domain: mobile_app
+    type: notify
+    message: Eingang geschlossen
+    title: Eingang geschlossen
+  mode: single
+- id: '1770557446099'
+  alias: Wasseralarm – Auslösen (Smartphones, 5 Min Limit)
+  triggers:
+  - entity_id:
+    - binary_sensor.waschraum_leckage_water_leak
+    - binary_sensor.kuche_leckage_water_leak
+    - binary_sensor.badezimmer_leckage_water_leak
+    - binary_sensor.hobbyraum_leckage_water_leak
+    - binary_sensor.heizungsraum_leckage_water_leak
+    - binary_sensor.bar_leckage_water_leak
+    to: 'on'
+    trigger: state
+  actions:
+  - target:
+      entity_id: input_boolean.wasseralarm_gequittiert
+    action: input_boolean.turn_off
+  - data:
+      title: "\U0001F6A8 Wasserleck erkannt!"
+      message: '{{ trigger.to_state.name or trigger.entity_id }} meldet Feuchtigkeit!
+
+        '
+      data:
+        ttl: 0
+        priority: high
+        importance: high
+        sticky: 'true'
+        channel: alarm
+        vibration: '3000'
+        sound: default
+        tag: '{{ alarm_tag }}'
+        actions:
+        - action: ACK_WATER
+          title: Quittieren
+    action: notify.ha_alarm_phones
+  - repeat:
+      while:
+      - condition: template
+        value_template: '{{ is_state(''input_boolean.wasseralarm_gequittiert'', ''off'')
+          }}'
+      - condition: template
+        value_template: '{{ is_state(source_sensor, ''on'') }}'
+      - condition: template
+        value_template: '{{ (now().timestamp() - start_ts) < 300 }}'
+      sequence:
+      - delay: 00:00:15
+      - data:
+          title: "\U0001F6A8 Wasserleck weiterhin aktiv!"
+          message: 'Bitte prüfen! Quelle: {{ state_attr(source_sensor, ''friendly_name'')
+            or source_sensor }}
+
+            '
+          data:
+            ttl: 0
+            priority: high
+            importance: high
+            channel: alarm
+            sound: default
+            vibration: '3000'
+            tag: '{{ alarm_tag }}'
+        action: notify.ha_alarm_phones
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ is_state(''input_boolean.wasseralarm_gequittiert'', ''off'')
+          }}'
+      - condition: template
+        value_template: '{{ is_state(source_sensor, ''on'') }}'
+      - condition: template
+        value_template: '{{ (now().timestamp() - start_ts) >= 300 }}'
+      sequence:
+      - data:
+          title: ⏱️ Wasseralarm automatisch beendet
+          message: 'Alarm wurde nach 5 Minuten automatisch gestoppt. Sensor meldet
+            weiterhin Nass: {{ state_attr(source_sensor, ''friendly_name'') or source_sensor
+            }}
+
+            '
+          data:
+            channel: alarm
+            importance: high
+            priority: high
+            vibration: '150'
+        action: notify.ha_alarm_phones
+      - data:
+          message: clear_notification
+          data:
+            tag: '{{ alarm_tag }}'
+        action: notify.ha_alarm_phones
+      - target:
+          entity_id: input_boolean.wasseralarm_gequittiert
+        action: input_boolean.turn_on
+  mode: restart
+  variables:
+    alarm_tag: wasseralarm
+    source_sensor: '{{ trigger.entity_id }}'
+    start_ts: '{{ now().timestamp() }}'
+- id: '1770559676763'
+  alias: Wasseralarm – Quittieren (Smartphone)
+  description: ''
+  triggers:
+  - event_type: mobile_app_notification_action
+    event_data:
+      action: ACK_WATER
+    trigger: event
+  actions:
+  - target:
+      entity_id: input_boolean.wasseralarm_gequittiert
+    action: input_boolean.turn_on
+  - data:
+      message: clear_notification
+      data:
+        tag: '{{ alarm_tag }}'
+    action: notify.ha_alarm_phones
+  mode: single
+  variables:
+    alarm_tag: wasseralarm
+- id: '1770559713174'
+  alias: Wasseralarm – Rückkehr zu normal
+  description: ''
+  triggers:
+  - entity_id:
+    - binary_sensor.waschraum_leckage_water_leak
+    - binary_sensor.kuche_leckage_water_leak
+    to: 'off'
+    trigger: state
+  conditions:
+  - condition: template
+    value_template: "{% set sensors = [\n  'binary_sensor.waschraum_leckage_water_leak',\n
+      \ 'binary_sensor.kuche_leckage_water_leak'\n] %} {{ expand(sensors) | selectattr('state','eq','on')
+      | list | count == 0 }}\n"
+  actions:
+  - data:
+      message: clear_notification
+      data:
+        tag: '{{ alarm_tag }}'
+    action: notify.ha_alarm_phones
+  - target:
+      entity_id: input_boolean.wasseralarm_gequittiert
+    action: input_boolean.turn_off
+  mode: single
+  variables:
+    alarm_tag: wasseralarm
+- id: '1771147657780'
+  alias: Warmwasser Zirkulation bei Bewegung
+  description: Startet Zirkulationspumpe bei Bewegung, max alle 15 Minuten
+  triggers:
+  - entity_id: binary_sensor.kuche_bewegungsmelder_occupancy
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.badezimmer_bewegungsmelder_occupancy
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.gastewc_bewegungsmelder_occupancy
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - target:
+      entity_id: switch.shelly1minig3_cc8da25bfef8_switch_0
+    action: switch.turn_on
+  - delay: 00:01:00
+  - target:
+      entity_id: switch.shelly1minig3_cc8da25bfef8_switch_0
+    action: switch.turn_off
+  - delay: 00:14:00
+  mode: single
+- id: '1777398428408'
+  alias: Büro Hoch
+  description: ''
+  triggers:
+  - trigger: time
+    at: 07:00:00
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  conditions: []
+  actions:
+  - device_id: 706b4386bf84a01d96c5639ee41ff165
+    domain: cover
+    entity_id: d548eb61f37a6524649f0436e58e22cc
+    type: open
+  mode: single
+- id: '1777398509372'
+  alias: Büro Verschatten
+  description: ''
+  triggers:
+  - trigger: time
+    at: '12:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - device_id: 706b4386bf84a01d96c5639ee41ff165
+    domain: cover
+    entity_id: d548eb61f37a6524649f0436e58e22cc
+    type: set_position
+    position: 40
+  mode: single
+- id: '1780335698670'
+  alias: Urlaub Rollo halb
+  description: ''
+  triggers:
+  - trigger: time
+    at: '12:00:00'
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    - sat
+    - sun
+  conditions: []
+  actions:
+  - device_id: c7127ab0fddb1b80dce114c0dcac04e4
+    domain: cover
+    entity_id: cb2e0f0b8f1aabf23df5a8e7e70f69c0
+    type: set_position
+    position: 40
+  - device_id: a1a718ff21e6a3cda0ba8eacc30b647e
+    domain: cover
+    entity_id: f29e04749fb19080593796ff92f7cac6
+    type: close
+  mode: single

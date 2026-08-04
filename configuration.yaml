@@ -1,0 +1,137 @@
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+notify:
+  - platform: group
+    name: ha_alarm_phones
+    services:
+      - service: mobile_app_pixel_9a
+      - service: mobile_app_cph2211
+
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+
+template:
+  - sensor:
+      - name: "Next Cover Automation"
+        state: >
+          {% set now_ts = as_timestamp(now()) %}
+          {% set dawn_ts = as_timestamp(state_attr('sun.sun', 'next_dawn')) %}
+          {% set dusk_ts = as_timestamp(state_attr('sun.sun', 'next_dusk')) %}
+          {% set today = now().date() %}
+
+          {% set earliest_ts = as_timestamp(today ~ " 06:00:00") %}
+          {% set latest_ts = as_timestamp(today ~ " 21:00:00") %}
+
+          {% set adjusted_dawn = [dawn_ts, earliest_ts]|max %}
+          {% set adjusted_dusk = [dusk_ts, latest_ts]|min %}
+
+          {% if adjusted_dawn > now_ts and (adjusted_dawn < adjusted_dusk or adjusted_dusk <= now_ts) %}
+            Cover opening at {{ adjusted_dawn | timestamp_custom('%H:%M') }}
+          {% else %}
+            Cover closing at {{ adjusted_dusk | timestamp_custom('%H:%M') }}
+          {% endif %}
+        attributes:
+          next_event: >
+            {% set now_ts = as_timestamp(now()) %}
+            {% set dawn_ts = as_timestamp(state_attr('sun.sun', 'next_dawn')) %}
+            {% set dusk_ts = as_timestamp(state_attr('sun.sun', 'next_dusk')) %}
+            {% set today = now().date() %}
+
+            {% set earliest_ts = as_timestamp(today ~ " 06:00:00") %}
+            {% set latest_ts = as_timestamp(today ~ " 21:00:00") %}
+
+            {% set adjusted_dawn = [dawn_ts, earliest_ts]|max %}
+            {% set adjusted_dusk = [dusk_ts, latest_ts]|min %}
+
+            {% if adjusted_dawn > now_ts and (adjusted_dawn < adjusted_dusk or adjusted_dusk <= now_ts) %}
+              {{ adjusted_dawn | timestamp_custom('%Y-%m-%dT%H:%M:%S') }}
+            {% else %}
+              {{ adjusted_dusk | timestamp_custom('%Y-%m-%dT%H:%M:%S') }}
+            {% endif %}
+          next_action: >
+            {% set now_ts = as_timestamp(now()) %}
+            {% set dawn_ts = as_timestamp(state_attr('sun.sun', 'next_dawn')) %}
+            {% set dusk_ts = as_timestamp(state_attr('sun.sun', 'next_dusk')) %}
+            {% set today = now().date() %}
+
+            {% set earliest_ts = as_timestamp(today ~ " 06:00:00") %}
+            {% set latest_ts = as_timestamp(today ~ " 21:00:00") %}
+
+            {% set adjusted_dawn = [dawn_ts, earliest_ts]|max %}
+            {% set adjusted_dusk = [dusk_ts, latest_ts]|min %}
+
+            {% if adjusted_dawn > now_ts and (adjusted_dawn < adjusted_dusk or adjusted_dusk <= now_ts) %}
+              opening
+            {% else %}
+              closing
+            {% endif %}
+  - sensor:
+      - name: "Heat Pump COP"
+        unique_id: heat_pump_cop
+        unit_of_measurement: ""
+        state: >
+          {% set heat = states('sensor.heating_ebusd_hmu_currentyieldpower') | float(0) %}
+          {% set power = states('sensor.heating_ebusd_hmu_currentconsumedpower') | float(0) %}
+          {% if power > 0 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:heat-pump
+
+      - name: "Compressor Runtime per Start"
+        unique_id: compressor_runtime_per_start
+        unit_of_measurement: "h"
+        state: >
+          {% set h = states('sensor.heating_ebusd_hmu_runstatscompressorhours') | float(0) %}
+          {% set s = states('sensor.heating_ebusd_hmu_runstatscompressorstarts') | float(1) %}
+          {{ (h / s) | round(2) }}
+        icon: mdi:clock-outline
+
+#template:
+# - sensor:
+#    - name: "Next Cover Automation"
+#     state: >
+#      {% set now = as_timestamp(now()) %}
+#     {% set dawn = as_timestamp(state_attr('sun.sun', 'next_dawn')) %}
+#    {% set dusk = as_timestamp(state_attr('sun.sun', 'next_dusk')) %}
+#
+#         {% if dawn > now and (dawn < dusk or dusk <= now) %}
+#          Cover opening at {{ dawn | timestamp_custom('%H:%M') }}
+#       {% else %}
+#        Cover closing at {{ dusk | timestamp_custom('%H:%M') }}
+#     {% endif %}
+#  attributes:
+#   next_event: >
+#    {% if dawn > now and (dawn < dusk or dusk <= now) %}
+#     {{ state_attr('sun.sun', 'next_dawn') }}
+#  {% else %}
+#   {{ state_attr('sun.sun', 'next_dusk') }}
+#{% endif %}
+# next_action: >
+#  {% if dawn > now and (dawn < dusk or dusk <= now) %}
+#    opening
+#  {% else %}
+#    closing
+#  {% endif %}
+###
+
+sensor:
+  - platform: avanza_stock
+    stock:
+      - id: 1063827
+        name: Holy Grail (A2PKXG)
+#homeassistant:
+#  packages: !include_dir_named integrations
+

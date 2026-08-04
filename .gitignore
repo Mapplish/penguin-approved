@@ -1,0 +1,47 @@
+# HA System- & Cache-Dateien
+.cache/
+.storage/
+.cloud/
+.HA_VERSION
+.ha_run.lock
+.uuid
+deps/
+tts/
+image/
+
+# Datenbank & Logs
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.*
+*.log.fault
+
+# Secrets - NIEMALS committen
+secrets.yaml
+
+# Dynamische/generierte Listen
+.shopping_list.json
+
+# Custom Components via HACS installiert
+# -> die werden von HACS verwaltet, nicht manuell -> nicht versionieren
+custom_components/
+
+# Ausnahme: falls ihr SELBST eine Component schreibt, die kein HACS ist,
+# die dann explizit wieder erlauben, z.B.:
+# !custom_components/mein_eigenes_ding/
+
+# Zigbee/Z-Wave Netzwerkdaten (enthalten Geräte-Keys)
+zigbee.db
+zigbee2mqtt/
+
+# Backups
+*.tar
+
+# System
+__pycache__/
+*.pyc
+
+# HACS interne Verwaltung (nicht die Cards selbst, die kommen über HACS)
+.storage/hacs*
+www/community/
