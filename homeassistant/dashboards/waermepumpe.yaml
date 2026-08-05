@@ -1,0 +1,43 @@
+title: Wärmepumpe
+views:
+  - title: Übersicht
+    path: overview
+    icon: mdi:heat-pump
+    cards:
+      - type: entities
+        title: Aktueller Betrieb
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heating_ebusd_hmu_currentconsumedpower
+            name: Stromaufnahme
+          - entity: sensor.heating_ebusd_hmu_currentyieldpower
+            name: Heizleistung
+          - entity: sensor.heating_ebusd_hmu_flowtemp
+            name: Vorlauf
+          - entity: sensor.heating_ebusd_hmu_supplytempweighted
+            name: Gewichteter Vorlauf
+          - entity: sensor.heating_ebusd_broadcast_outsidetemp
+            name: Außentemperatur
+
+      - type: custom:mini-graph-card
+        name: Leistung (24h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.heating_ebusd_hmu_currentconsumedpower
+            name: Strom
+          - entity: sensor.heating_ebusd_hmu_currentyieldpower
+            name: Heizleistung
+
+      - type: custom:mini-graph-card
+        name: Temperaturen (24h)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.heating_ebusd_hmu_flowtemp
+            name: Vorlauf
+          - entity: sensor.heating_ebusd_hmu_supplytempweighted
+            name: Gewichtet
+          - entity: sensor.heating_ebusd_broadcast_outsidetemp
+            name: Außen
+
+
+
