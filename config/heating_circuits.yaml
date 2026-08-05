@@ -1,0 +1,11 @@
+HK01:
+  room: living_room
+  manifold: 1
+
+HK02:
+  room: living_room
+  manifold: 1
+
+HK03:
+  room: kitchen
+  manifold: 1
