@@ -45,3 +45,8 @@ __pycache__/
 # HACS interne Verwaltung (nicht die Cards selbst, die kommen über HACS)
 .storage/hacs*
 www/community/
+
+# Lokale Start-/SSH-Skripte (PC-spezifisch, nicht versionieren)
+start-penguin.ps1
+start-ssh.ps1
+start-claude.ps1
