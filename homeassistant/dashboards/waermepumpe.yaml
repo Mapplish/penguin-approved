@@ -39,5 +39,91 @@ views:
           - entity: sensor.heating_ebusd_broadcast_outsidetemp
             name: Außen
 
+  - title: Einstellungen
+    path: einstellungen
+    icon: mdi:tune
+    cards:
+      - type: entities
+        title: Heizkreis 1
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heating_ebusd_ctlv2_z1opmode
+            name: Modus
+          - entity: sensor.heating_ebusd_ctlv2_z1daytemp
+            name: Wunschtemperatur (Heizen)
+          - entity: sensor.heating_ebusd_ctlv2_z1nighttemp
+            name: Absenktemperatur
+          - entity: sensor.heating_ebusd_ctlv2_z1holidaytemp
+            name: Urlaubstemperatur (ungeprüft)
+          - entity: sensor.heating_ebusd_ctlv2_z1quickvetotemp
+            name: Kurzzeit-Veto-Temperatur (ungeprüft)
+          - entity: sensor.heating_ebusd_ctlv2_z1coolingtemp
+            name: Wunschtemperatur (Kühlen)
+          - entity: sensor.heating_ebusd_ctlv2_z1sfmode
+            name: Sonderfunktion-Modus (ungeprüft)
+          - entity: sensor.heating_ebusd_ctlv2_hc1heatcurve
+            name: Heizkurve
+          - entity: sensor.heating_ebusd_ctlv2_hc1heatcurveadaption
+            name: Heizkurve-Adaption (ungeprüft)
+          - entity: sensor.heating_ebusd_ctlv2_hc1minflowtempdesired
+            name: Min. Vorlaufsolltemperatur
+          - entity: sensor.heating_ebusd_ctlv2_hc1maxflowtempdesired
+            name: Max. Vorlaufsolltemperatur
+          - entity: sensor.heating_ebusd_ctlv2_hc1mincoolingtempdesired
+            name: Min. Vorlaufsolltemp. Kühlen
+          - entity: sensor.heating_ebusd_ctlv2_hc1summertemplimit
+            name: AT-Abschaltgrenze
+          - entity: sensor.heating_ebusd_ctlv2_hc1autooffmode
+            name: Absenkmodus
+          - entity: sensor.heating_ebusd_ctlv2_hc1excesstemp
+            name: Überschusstemperatur (ungeprüft)
+          - entity: sensor.heating_ebusd_ctlv2_hc1roomtempswitchon
+            name: Raumaufschaltung
 
+      - type: entities
+        title: Warmwasser
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heating_ebusd_ctlv2_hwcopmode
+            name: Modus
+          - entity: sensor.heating_ebusd_ctlv2_hwctempdesired
+            name: Warmwassertemperatur
+          - entity: sensor.heating_ebusd_ctlv2_hwcmaxflowtempdesired
+            name: Max. Vorlaufsolltemp. WW
+          - entity: sensor.heating_ebusd_ctlv2_hwcsfmode
+            name: Warmwasser schnell
+
+      - type: entities
+        title: Wärmepumpe (Live-Sollwerte, kein Menüpunkt)
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heating_ebusd_hmu_setmode_hcmode
+            name: Heizkreis-Modus
+          - entity: sensor.heating_ebusd_hmu_setmode_flowtempdesired
+            name: Vorlauf-Sollwert
+          - entity: sensor.heating_ebusd_hmu_setmode_hwctempdesired
+            name: Warmwasser-Sollwert
+          - entity: sensor.heating_ebusd_hmu_setmode_hwcflowtempdesired
+            name: Warmwasser-Vorlauf-Sollwert
+          - entity: sensor.heating_ebusd_hmu_setmode_disablehc
+            name: Heizkreis gesperrt
+          - entity: sensor.heating_ebusd_hmu_setmode_disablehwctapping
+            name: Warmwasser-Zapfung gesperrt
+          - entity: sensor.heating_ebusd_hmu_setmode_disablehwcload
+            name: Warmwasser-Beladung gesperrt
+          - entity: sensor.heating_ebusd_hmu_setmode_remotecontrolhcpump
+            name: Fernsteuerung Heizungspumpe
+          - entity: sensor.heating_ebusd_hmu_setmode_releasebackup
+            name: Backup-Heizstab freigegeben
+          - entity: sensor.heating_ebusd_hmu_setmode_releasecooling
+            name: Kühlung freigegeben
+
+      - type: entities
+        title: Allgemein
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heating_ebusd_ctlv2_maxroomhumidity
+            name: Max. Raumluftfeuchte
+          - entity: sensor.heating_ebusd_ctlv2_adaptheatcurve
+            name: Adaptive Heizkurve
 
