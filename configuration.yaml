@@ -16,11 +16,6 @@ notify:
       - service: mobile_app_pixel_9a
       - service: mobile_app_cph2211
 
-http:
-  use_x_forwarded_for: true
-  trusted_proxies:
-    - 127.0.0.1
-
 template:
   - sensor:
       - name: "Next Cover Automation"
