@@ -14,61 +14,70 @@ views:
             name: Luftfeuchtigkeit
 
       - type: markdown
-        title: Lüftungsempfehlung
-        content: >
-          {% set temp_entities = ['sensor.baby_temperatur_temperature',
-            'sensor.badezimmer_temperatur_temperature',
-            'sensor.bar_temperatur_temperature',
-            'sensor.buro_temperatur_temperature',
-            'sensor.eingang_temperatur_temperature',
-            'sensor.esszimmer_temperatur_temperature',
-            'sensor.gastewc_temperatur_temperature',
-            'sensor.kuche_temperatur_temperature',
-            'sensor.schlafzimmer_temperatur_temperature',
-            'sensor.wohnzimmer_temperatur_temperature'] %}
-          {% set hum_entities = ['sensor.baby_temperatur_humidity',
-            'sensor.badezimmer_temperatur_humidity',
-            'sensor.bar_temperatur_humidity',
-            'sensor.buro_temperatur_humidity',
-            'sensor.eingang_temperatur_humidity',
-            'sensor.esszimmer_temperatur_humidity',
-            'sensor.gastewc_temperatur_humidity',
-            'sensor.kuche_temperatur_humidity',
-            'sensor.schlafzimmer_temperatur_humidity',
-            'sensor.wohnzimmer_temperatur_humidity'] %}
-          {% set ns = namespace(temps=[], hums=[]) %}
-          {% for e in temp_entities %}
-            {% set s = states(e) %}
-            {% if s not in ['unknown', 'unavailable', none] %}
-              {% set ns.temps = ns.temps + [s | float] %}
-            {% endif %}
+        title: Raumklima-Bewertung
+        content: |
+          {% set a = 17.62 %}
+          {% set b = 243.12 %}
+          {% set target = 21 %}
+          {% set tol = 1.5 %}
+          {% set rooms = [
+            {'name': 'Baby', 't': 'sensor.baby_temperatur_temperature', 'h': 'sensor.baby_temperatur_humidity'},
+            {'name': 'Badezimmer', 't': 'sensor.badezimmer_temperatur_temperature', 'h': 'sensor.badezimmer_temperatur_humidity'},
+            {'name': 'Bar', 't': 'sensor.bar_temperatur_temperature', 'h': 'sensor.bar_temperatur_humidity'},
+            {'name': 'Büro', 't': 'sensor.buro_temperatur_temperature', 'h': 'sensor.buro_temperatur_humidity'},
+            {'name': 'Eingang', 't': 'sensor.eingang_temperatur_temperature', 'h': 'sensor.eingang_temperatur_humidity'},
+            {'name': 'Esszimmer', 't': 'sensor.esszimmer_temperatur_temperature', 'h': 'sensor.esszimmer_temperatur_humidity'},
+            {'name': 'Gäste-WC', 't': 'sensor.gastewc_temperatur_temperature', 'h': 'sensor.gastewc_temperatur_humidity'},
+            {'name': 'Küche', 't': 'sensor.kuche_temperatur_temperature', 'h': 'sensor.kuche_temperatur_humidity'},
+            {'name': 'Schlafzimmer', 't': 'sensor.schlafzimmer_temperatur_temperature', 'h': 'sensor.schlafzimmer_temperatur_humidity'},
+            {'name': 'Wohnzimmer', 't': 'sensor.wohnzimmer_temperatur_temperature', 'h': 'sensor.wohnzimmer_temperatur_humidity'}
+          ] %}
+          {% set ns = namespace(dewpoints=[]) %}
+
+          **Zielwert:** {{ target }} °C ± {{ tol }} °C &nbsp;·&nbsp; Feuchte optimal 30–60 %
+
+
+          | Raum | Temperatur | Feuchte | Taupunkt |
+          |---|---|---|---|
+          {% for r in rooms -%}
+          {%- set t = states(r.t) | float(None) -%}
+          {%- set h = states(r.h) | float(None) -%}
+          {%- if t is not none and h is not none and h > 0 -%}
+          {%- set alpha = (a * t / (b + t)) + log(h / 100) -%}
+          {%- set td = (b * alpha / (a - alpha)) | round(1) -%}
+          {%- set ns.dewpoints = ns.dewpoints + [td] -%}
+          {%- set temp_status = '🔵 zu kühl' if t < target - tol else ('🔴 zu warm' if t > target + tol else '🟢 im Zielbereich') -%}
+          {%- set hum_status = '🟡 trocken' if h < 30 else ('🟢 optimal' if h <= 60 else ('🟠 erhöht' if h <= 70 else '🔴 Schimmelrisiko')) -%}
+          | {{ r.name }} | {{ t }} °C {{ temp_status }} | {{ h }} % {{ hum_status }} | {{ td }} °C |
+          {% else -%}
+          | {{ r.name }} | – | – | – |
+          {% endif -%}
           {% endfor %}
-          {% for e in hum_entities %}
-            {% set s = states(e) %}
-            {% if s not in ['unknown', 'unavailable', none] %}
-              {% set ns.hums = ns.hums + [s | float] %}
-            {% endif %}
-          {% endfor %}
-          {% set avg_temp = (ns.temps | sum / ns.temps | length) | round(1) if ns.temps | length > 0 else None %}
-          {% set avg_hum = (ns.hums | sum / ns.hums | length) | round(1) if ns.hums | length > 0 else None %}
-          {% set out_temp = states('sensor.aussen_temperatur_temperature') | float(None) %}
-          {% set out_hum = states('sensor.aussen_temperatur_humidity') | float(None) %}
-
-          **Ø Innen:** {{ avg_temp }} °C / {{ avg_hum }} % &nbsp;·&nbsp; **Außen:** {{ out_temp }} °C / {{ out_hum }} %
 
 
-          {% if avg_temp is not none and avg_hum is not none and out_temp is not none and out_hum is not none %}
-            {% if out_temp < avg_temp and out_hum < avg_hum %}
-          ✅ Lüften empfohlen (draußen kühler und trockener als drinnen)
-            {% else %}
-          ⏸️ Lüften aktuell eher nicht vorteilhaft
-            {% endif %}
+          {% set out_t = states('sensor.aussen_temperatur_temperature') | float(None) %}
+          {% set out_h = states('sensor.aussen_temperatur_humidity') | float(None) %}
+          {% set avg_td = (ns.dewpoints | sum / ns.dewpoints | length) | round(1) if ns.dewpoints | length > 0 else None %}
+          {% if out_t is not none and out_h is not none and out_h > 0 and avg_td is not none %}
+          {% set out_alpha = (a * out_t / (b + out_t)) + log(out_h / 100) %}
+          {% set out_td = (b * out_alpha / (a - out_alpha)) | round(1) %}
+
+          **Taupunkt Außen:** {{ out_td }} °C &nbsp;·&nbsp; **Ø Taupunkt Innen:** {{ avg_td }} °C
+
+
+          {% if out_td < avg_td - 1 %}
+          ✅ Lüften empfohlen (Außenluft ist trockener als die Innenluft)
+          {% elif out_td > avg_td + 1 %}
+          ⏸️ Lüften bringt aktuell mehr Feuchtigkeit rein als raus
           {% else %}
-          ⚠️ Nicht genug Daten für eine Empfehlung
+          ➖ Lüften macht aktuell kaum einen Unterschied
+          {% endif %}
+          {% else %}
+          ⚠️ Nicht genug Daten für eine Lüftungsempfehlung
           {% endif %}
 
 
-          *Faustregel-Heuristik (Temperatur- und Feuchtevergleich), kein echter Taupunktvergleich.*
+          *Schimmelrisiko-Einstufung ist eine Faustregel auf Basis relativer Feuchte (>70 %); ohne Wandoberflächentemperatur kein exakter Kondensationswert.*
 
       - type: entities
         title: Baby
