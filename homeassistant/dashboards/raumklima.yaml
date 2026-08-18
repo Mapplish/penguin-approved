@@ -1,0 +1,186 @@
+title: Raumklima
+views:
+  - title: Übersicht
+    path: overview
+    icon: mdi:home-thermometer
+    cards:
+      - type: entities
+        title: Außen (Referenz)
+        show_header_toggle: false
+        entities:
+          - entity: sensor.aussen_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.aussen_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: markdown
+        title: Lüftungsempfehlung
+        content: >
+          {% set temp_entities = ['sensor.baby_temperatur_temperature',
+            'sensor.badezimmer_temperatur_temperature',
+            'sensor.bar_temperatur_temperature',
+            'sensor.buro_temperatur_temperature',
+            'sensor.eingang_temperatur_temperature',
+            'sensor.esszimmer_temperatur_temperature',
+            'sensor.gastewc_temperatur_temperature',
+            'sensor.kuche_temperatur_temperature',
+            'sensor.schlafzimmer_temperatur_temperature',
+            'sensor.wohnzimmer_temperatur_temperature'] %}
+          {% set hum_entities = ['sensor.baby_temperatur_humidity',
+            'sensor.badezimmer_temperatur_humidity',
+            'sensor.bar_temperatur_humidity',
+            'sensor.buro_temperatur_humidity',
+            'sensor.eingang_temperatur_humidity',
+            'sensor.esszimmer_temperatur_humidity',
+            'sensor.gastewc_temperatur_humidity',
+            'sensor.kuche_temperatur_humidity',
+            'sensor.schlafzimmer_temperatur_humidity',
+            'sensor.wohnzimmer_temperatur_humidity'] %}
+          {% set ns = namespace(temps=[], hums=[]) %}
+          {% for e in temp_entities %}
+            {% set s = states(e) %}
+            {% if s not in ['unknown', 'unavailable', none] %}
+              {% set ns.temps = ns.temps + [s | float] %}
+            {% endif %}
+          {% endfor %}
+          {% for e in hum_entities %}
+            {% set s = states(e) %}
+            {% if s not in ['unknown', 'unavailable', none] %}
+              {% set ns.hums = ns.hums + [s | float] %}
+            {% endif %}
+          {% endfor %}
+          {% set avg_temp = (ns.temps | sum / ns.temps | length) | round(1) if ns.temps | length > 0 else None %}
+          {% set avg_hum = (ns.hums | sum / ns.hums | length) | round(1) if ns.hums | length > 0 else None %}
+          {% set out_temp = states('sensor.aussen_temperatur_temperature') | float(None) %}
+          {% set out_hum = states('sensor.aussen_temperatur_humidity') | float(None) %}
+
+          **Ø Innen:** {{ avg_temp }} °C / {{ avg_hum }} % &nbsp;·&nbsp; **Außen:** {{ out_temp }} °C / {{ out_hum }} %
+
+
+          {% if avg_temp is not none and avg_hum is not none and out_temp is not none and out_hum is not none %}
+            {% if out_temp < avg_temp and out_hum < avg_hum %}
+          ✅ Lüften empfohlen (draußen kühler und trockener als drinnen)
+            {% else %}
+          ⏸️ Lüften aktuell eher nicht vorteilhaft
+            {% endif %}
+          {% else %}
+          ⚠️ Nicht genug Daten für eine Empfehlung
+          {% endif %}
+
+
+          *Faustregel-Heuristik (Temperatur- und Feuchtevergleich), kein echter Taupunktvergleich.*
+
+      - type: entities
+        title: Baby
+        show_header_toggle: false
+        entities:
+          - entity: sensor.baby_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.baby_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Badezimmer
+        show_header_toggle: false
+        entities:
+          - entity: sensor.badezimmer_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.badezimmer_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Bar
+        show_header_toggle: false
+        entities:
+          - entity: sensor.bar_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.bar_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Büro
+        show_header_toggle: false
+        entities:
+          - entity: sensor.buro_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.buro_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Eingang
+        show_header_toggle: false
+        entities:
+          - entity: sensor.eingang_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.eingang_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Esszimmer
+        show_header_toggle: false
+        entities:
+          - entity: sensor.esszimmer_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.esszimmer_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Gäste-WC
+        show_header_toggle: false
+        entities:
+          - entity: sensor.gastewc_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.gastewc_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Küche
+        show_header_toggle: false
+        entities:
+          - entity: sensor.kuche_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.kuche_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Schlafzimmer
+        show_header_toggle: false
+        entities:
+          - entity: sensor.schlafzimmer_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.schlafzimmer_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: entities
+        title: Wohnzimmer
+        show_header_toggle: false
+        entities:
+          - entity: sensor.wohnzimmer_temperatur_temperature
+            name: Temperatur
+          - entity: sensor.wohnzimmer_temperatur_humidity
+            name: Luftfeuchtigkeit
+
+      - type: custom:mini-graph-card
+        name: Luftfeuchtigkeit (24h, alle Räume)
+        hours_to_show: 24
+        entities:
+          - entity: sensor.baby_temperatur_humidity
+            name: Baby
+          - entity: sensor.badezimmer_temperatur_humidity
+            name: Badezimmer
+          - entity: sensor.bar_temperatur_humidity
+            name: Bar
+          - entity: sensor.buro_temperatur_humidity
+            name: Büro
+          - entity: sensor.eingang_temperatur_humidity
+            name: Eingang
+          - entity: sensor.esszimmer_temperatur_humidity
+            name: Esszimmer
+          - entity: sensor.gastewc_temperatur_humidity
+            name: Gäste-WC
+          - entity: sensor.kuche_temperatur_humidity
+            name: Küche
+          - entity: sensor.schlafzimmer_temperatur_humidity
+            name: Schlafzimmer
+          - entity: sensor.wohnzimmer_temperatur_humidity
+            name: Wohnzimmer

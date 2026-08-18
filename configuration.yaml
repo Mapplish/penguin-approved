@@ -396,3 +396,8 @@ lovelace:
       title: Wärmepumpe
       icon: mdi:heat-pump
       filename: homeassistant/dashboards/waermepumpe.yaml
+    raumklima:
+      mode: yaml
+      title: Raumklima
+      icon: mdi:home-thermometer
+      filename: homeassistant/dashboards/raumklima.yaml
