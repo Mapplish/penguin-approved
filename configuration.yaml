@@ -75,6 +75,7 @@ template:
       - name: "Heat Pump COP"
         unique_id: heat_pump_cop
         unit_of_measurement: ""
+        state_class: measurement
         state: >
           {% set heat = states('sensor.heating_ebusd_hmu_currentyieldpower') | float(0) %}
           {% set power = states('sensor.heating_ebusd_hmu_currentconsumedpower') | float(0) %}
@@ -85,9 +86,180 @@ template:
           {% endif %}
         icon: mdi:heat-pump
 
+      - name: "Heat Pump COP Daily"
+        unique_id: heat_pump_cop_daily
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_waermeertrag_taeglich') | float(0) %}
+          {% set power = states('sensor.waermepumpe_stromverbrauch_taeglich') | float(0) %}
+          {% if power > 0.05 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:heat-pump-outline
+
+      - name: "Wärmepumpe Strom Heizen"
+        unique_id: waermepumpe_strom_heizen
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.heating_ebusd_hmu_rundatastatuscode') == 'heat_compressor_active' %}
+            {{ states('sensor.heating_ebusd_hmu_currentconsumedpower') | float(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Wärmepumpe Ertrag Heizen"
+        unique_id: waermepumpe_ertrag_heizen
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.heating_ebusd_hmu_rundatastatuscode') == 'heat_compressor_active' %}
+            {{ states('sensor.heating_ebusd_hmu_currentyieldpower') | float(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Wärmepumpe Strom Warmwasser"
+        unique_id: waermepumpe_strom_warmwasser
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.heating_ebusd_hmu_rundatastatuscode') == 'hwc_compressor_active' %}
+            {{ states('sensor.heating_ebusd_hmu_currentconsumedpower') | float(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Wärmepumpe Ertrag Warmwasser"
+        unique_id: waermepumpe_ertrag_warmwasser
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.heating_ebusd_hmu_rundatastatuscode') == 'hwc_compressor_active' %}
+            {{ states('sensor.heating_ebusd_hmu_currentyieldpower') | float(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Wärmepumpe Strom Kühlen"
+        unique_id: waermepumpe_strom_kuehlen
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.heating_ebusd_hmu_rundatastatuscode') == 'cool_compressor_active' %}
+            {{ states('sensor.heating_ebusd_hmu_currentconsumedpower') | float(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Wärmepumpe Ertrag Kühlen"
+        unique_id: waermepumpe_ertrag_kuehlen
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if states('sensor.heating_ebusd_hmu_rundatastatuscode') == 'cool_compressor_active' %}
+            {{ states('sensor.heating_ebusd_hmu_currentyieldpower') | float(0) }}
+          {% else %}
+            0
+          {% endif %}
+
+      - name: "Heat Pump COP Heizen"
+        unique_id: heat_pump_cop_heizen
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_ertrag_heizen') | float(0) %}
+          {% set power = states('sensor.waermepumpe_strom_heizen') | float(0) %}
+          {% if power > 0 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:radiator
+
+      - name: "Heat Pump COP Heizen (kumuliert)"
+        unique_id: heat_pump_cop_heizen_cumulative
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_ertrag_heizen_kumuliert') | float(0) %}
+          {% set power = states('sensor.waermepumpe_strom_heizen_kumuliert') | float(0) %}
+          {% if power > 0.05 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:radiator
+
+      - name: "Heat Pump COP Warmwasser"
+        unique_id: heat_pump_cop_warmwasser
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_ertrag_warmwasser') | float(0) %}
+          {% set power = states('sensor.waermepumpe_strom_warmwasser') | float(0) %}
+          {% if power > 0 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:water-boiler
+
+      - name: "Heat Pump COP Warmwasser (kumuliert)"
+        unique_id: heat_pump_cop_warmwasser_cumulative
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_ertrag_warmwasser_kumuliert') | float(0) %}
+          {% set power = states('sensor.waermepumpe_strom_warmwasser_kumuliert') | float(0) %}
+          {% if power > 0.05 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:water-boiler
+
+      - name: "Heat Pump COP Kühlen"
+        unique_id: heat_pump_cop_kuehlen
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_ertrag_kuehlen') | float(0) %}
+          {% set power = states('sensor.waermepumpe_strom_kuehlen') | float(0) %}
+          {% if power > 0 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:snowflake
+
+      - name: "Heat Pump COP Kühlen (kumuliert)"
+        unique_id: heat_pump_cop_kuehlen_cumulative
+        unit_of_measurement: ""
+        state_class: measurement
+        state: >
+          {% set heat = states('sensor.waermepumpe_ertrag_kuehlen_kumuliert') | float(0) %}
+          {% set power = states('sensor.waermepumpe_strom_kuehlen_kumuliert') | float(0) %}
+          {% if power > 0.05 %}
+            {{ (heat / power) | round(2) }}
+          {% else %}
+            0
+          {% endif %}
+        icon: mdi:snowflake
+
       - name: "Compressor Runtime per Start"
         unique_id: compressor_runtime_per_start
         unit_of_measurement: "h"
+        state_class: measurement
         state: >
           {% set h = states('sensor.heating_ebusd_hmu_runstatscompressorhours') | float(0) %}
           {% set s = states('sensor.heating_ebusd_hmu_runstatscompressorstarts') | float(1) %}
@@ -127,6 +299,89 @@ sensor:
     stock:
       - id: 1063827
         name: Holy Grail (A2PKXG)
+
+  - platform: integration
+    source: sensor.heating_ebusd_hmu_currentconsumedpower
+    name: "Wärmepumpe Stromverbrauch"
+    unique_id: waermepumpe_stromverbrauch
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.heating_ebusd_hmu_currentyieldpower
+    name: "Wärmepumpe Wärmeertrag"
+    unique_id: waermepumpe_waermeertrag
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.waermepumpe_strom_heizen
+    name: "Wärmepumpe Strom Heizen (kumuliert)"
+    unique_id: waermepumpe_strom_heizen_kumuliert
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.waermepumpe_ertrag_heizen
+    name: "Wärmepumpe Ertrag Heizen (kumuliert)"
+    unique_id: waermepumpe_ertrag_heizen_kumuliert
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.waermepumpe_strom_warmwasser
+    name: "Wärmepumpe Strom Warmwasser (kumuliert)"
+    unique_id: waermepumpe_strom_warmwasser_kumuliert
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.waermepumpe_ertrag_warmwasser
+    name: "Wärmepumpe Ertrag Warmwasser (kumuliert)"
+    unique_id: waermepumpe_ertrag_warmwasser_kumuliert
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.waermepumpe_strom_kuehlen
+    name: "Wärmepumpe Strom Kühlen (kumuliert)"
+    unique_id: waermepumpe_strom_kuehlen_kumuliert
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+  - platform: integration
+    source: sensor.waermepumpe_ertrag_kuehlen
+    name: "Wärmepumpe Ertrag Kühlen (kumuliert)"
+    unique_id: waermepumpe_ertrag_kuehlen_kumuliert
+    unit_prefix: k
+    unit_time: h
+    method: trapezoidal
+    round: 3
+
+utility_meter:
+  waermepumpe_stromverbrauch_taeglich:
+    source: sensor.waermepumpe_stromverbrauch
+    name: "Wärmepumpe Stromverbrauch (heute)"
+    cycle: daily
+  waermepumpe_waermeertrag_taeglich:
+    source: sensor.waermepumpe_waermeertrag
+    name: "Wärmepumpe Wärmeertrag (heute)"
+    cycle: daily
+
 #homeassistant:
 #  packages: !include_dir_named integrations
 

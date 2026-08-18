@@ -127,3 +127,95 @@ views:
           - entity: sensor.heating_ebusd_ctlv2_adaptheatcurve
             name: Adaptive Heizkurve
 
+  - title: Statistik
+    path: statistik
+    icon: mdi:chart-line
+    cards:
+      - type: entities
+        title: COP – Gesamt
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heat_pump_cop
+            name: Momentan-COP
+          - entity: sensor.heat_pump_cop_daily
+            name: Tagesmittel-COP
+
+      - type: entities
+        title: COP – Heizen
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heat_pump_cop_heizen
+            name: Momentan-COP
+          - entity: sensor.heat_pump_cop_heizen_kumuliert
+            name: COP (kumuliert seit Erfassung)
+
+      - type: entities
+        title: COP – Warmwasser
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heat_pump_cop_warmwasser
+            name: Momentan-COP
+          - entity: sensor.heat_pump_cop_warmwasser_kumuliert
+            name: COP (kumuliert seit Erfassung)
+
+      - type: entities
+        title: COP – Kühlen (ungeprüft)
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heat_pump_cop_kuehlen
+            name: Momentan-COP (ungeprüft)
+          - entity: sensor.heat_pump_cop_kuehlen_kumuliert
+            name: COP kumuliert (ungeprüft)
+
+      - type: entities
+        title: Energie (heute, gesamt)
+        show_header_toggle: false
+        entities:
+          - entity: sensor.waermepumpe_stromverbrauch_taeglich
+            name: Stromverbrauch
+          - entity: sensor.waermepumpe_waermeertrag_taeglich
+            name: Wärmeertrag
+          - entity: sensor.compressor_runtime_per_start
+            name: Verdichter-Laufzeit je Start
+
+      - type: entities
+        title: Energie je Betriebsart (kumuliert seit Erfassung)
+        show_header_toggle: false
+        entities:
+          - entity: sensor.waermepumpe_strom_heizen_kumuliert
+            name: Strom Heizen
+          - entity: sensor.waermepumpe_ertrag_heizen_kumuliert
+            name: Wärmeertrag Heizen
+          - entity: sensor.waermepumpe_strom_warmwasser_kumuliert
+            name: Strom Warmwasser
+          - entity: sensor.waermepumpe_ertrag_warmwasser_kumuliert
+            name: Wärmeertrag Warmwasser
+          - entity: sensor.waermepumpe_strom_kuehlen_kumuliert
+            name: Strom Kühlen (ungeprüft)
+          - entity: sensor.waermepumpe_ertrag_kuehlen_kumuliert
+            name: Wärmeertrag Kühlen (ungeprüft)
+
+      - type: statistics-graph
+        title: COP-Verlauf (30 Tage)
+        period:
+          calendar:
+            period: day
+        stat_types:
+          - mean
+        entities:
+          - sensor.heat_pump_cop
+          - sensor.heat_pump_cop_heizen
+          - sensor.heat_pump_cop_warmwasser
+          - sensor.heat_pump_cop_kuehlen
+
+      - type: statistics-graph
+        title: Energie-Verlauf (30 Tage)
+        period:
+          calendar:
+            period: day
+        stat_types:
+          - sum
+        entities:
+          - sensor.waermepumpe_stromverbrauch
+          - sensor.waermepumpe_waermeertrag
+
