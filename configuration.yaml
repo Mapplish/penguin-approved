@@ -100,8 +100,8 @@ template:
           {% endif %}
         icon: mdi:heat-pump-outline
 
-      - name: "Wärmepumpe Strom Heizen"
-        unique_id: waermepumpe_strom_heizen
+      - name: "Waermepumpe Strom Heizen"
+        unique_id: waermepumpe_strom_heizen_v2
         unit_of_measurement: "W"
         device_class: power
         state_class: measurement
@@ -112,8 +112,8 @@ template:
             0
           {% endif %}
 
-      - name: "Wärmepumpe Ertrag Heizen"
-        unique_id: waermepumpe_ertrag_heizen
+      - name: "Waermepumpe Ertrag Heizen"
+        unique_id: waermepumpe_ertrag_heizen_v2
         unit_of_measurement: "W"
         device_class: power
         state_class: measurement
@@ -124,8 +124,8 @@ template:
             0
           {% endif %}
 
-      - name: "Wärmepumpe Strom Warmwasser"
-        unique_id: waermepumpe_strom_warmwasser
+      - name: "Waermepumpe Strom Warmwasser"
+        unique_id: waermepumpe_strom_warmwasser_v2
         unit_of_measurement: "W"
         device_class: power
         state_class: measurement
@@ -136,8 +136,8 @@ template:
             0
           {% endif %}
 
-      - name: "Wärmepumpe Ertrag Warmwasser"
-        unique_id: waermepumpe_ertrag_warmwasser
+      - name: "Waermepumpe Ertrag Warmwasser"
+        unique_id: waermepumpe_ertrag_warmwasser_v2
         unit_of_measurement: "W"
         device_class: power
         state_class: measurement
@@ -148,8 +148,8 @@ template:
             0
           {% endif %}
 
-      - name: "Wärmepumpe Strom Kühlen"
-        unique_id: waermepumpe_strom_kuehlen
+      - name: "Waermepumpe Strom Kuehlen"
+        unique_id: waermepumpe_strom_kuehlen_v2
         unit_of_measurement: "W"
         device_class: power
         state_class: measurement
@@ -160,8 +160,8 @@ template:
             0
           {% endif %}
 
-      - name: "Wärmepumpe Ertrag Kühlen"
-        unique_id: waermepumpe_ertrag_kuehlen
+      - name: "Waermepumpe Ertrag Kuehlen"
+        unique_id: waermepumpe_ertrag_kuehlen_v2
         unit_of_measurement: "W"
         device_class: power
         state_class: measurement
@@ -228,8 +228,8 @@ template:
           {% endif %}
         icon: mdi:water-boiler
 
-      - name: "Heat Pump COP Kühlen"
-        unique_id: heat_pump_cop_kuehlen
+      - name: "Heat Pump COP Kuehlen"
+        unique_id: heat_pump_cop_kuehlen_v2
         unit_of_measurement: ""
         state_class: measurement
         state: >
@@ -242,8 +242,8 @@ template:
           {% endif %}
         icon: mdi:snowflake
 
-      - name: "Heat Pump COP Kühlen (kumuliert)"
-        unique_id: heat_pump_cop_kuehlen_cumulative
+      - name: "Heat Pump COP Kuehlen (kumuliert)"
+        unique_id: heat_pump_cop_kuehlen_cumulative_v2
         unit_of_measurement: ""
         state_class: measurement
         state: >
@@ -302,8 +302,8 @@ sensor:
 
   - platform: integration
     source: sensor.heating_ebusd_hmu_currentconsumedpower
-    name: "Wärmepumpe Stromverbrauch"
-    unique_id: waermepumpe_stromverbrauch
+    name: "Waermepumpe Stromverbrauch"
+    unique_id: waermepumpe_stromverbrauch_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -311,8 +311,8 @@ sensor:
 
   - platform: integration
     source: sensor.heating_ebusd_hmu_currentyieldpower
-    name: "Wärmepumpe Wärmeertrag"
-    unique_id: waermepumpe_waermeertrag
+    name: "Waermepumpe Waermeertrag"
+    unique_id: waermepumpe_waermeertrag_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -320,8 +320,8 @@ sensor:
 
   - platform: integration
     source: sensor.waermepumpe_strom_heizen
-    name: "Wärmepumpe Strom Heizen (kumuliert)"
-    unique_id: waermepumpe_strom_heizen_kumuliert
+    name: "Waermepumpe Strom Heizen (kumuliert)"
+    unique_id: waermepumpe_strom_heizen_kumuliert_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -329,8 +329,8 @@ sensor:
 
   - platform: integration
     source: sensor.waermepumpe_ertrag_heizen
-    name: "Wärmepumpe Ertrag Heizen (kumuliert)"
-    unique_id: waermepumpe_ertrag_heizen_kumuliert
+    name: "Waermepumpe Ertrag Heizen (kumuliert)"
+    unique_id: waermepumpe_ertrag_heizen_kumuliert_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -338,8 +338,8 @@ sensor:
 
   - platform: integration
     source: sensor.waermepumpe_strom_warmwasser
-    name: "Wärmepumpe Strom Warmwasser (kumuliert)"
-    unique_id: waermepumpe_strom_warmwasser_kumuliert
+    name: "Waermepumpe Strom Warmwasser (kumuliert)"
+    unique_id: waermepumpe_strom_warmwasser_kumuliert_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -347,8 +347,8 @@ sensor:
 
   - platform: integration
     source: sensor.waermepumpe_ertrag_warmwasser
-    name: "Wärmepumpe Ertrag Warmwasser (kumuliert)"
-    unique_id: waermepumpe_ertrag_warmwasser_kumuliert
+    name: "Waermepumpe Ertrag Warmwasser (kumuliert)"
+    unique_id: waermepumpe_ertrag_warmwasser_kumuliert_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -356,8 +356,8 @@ sensor:
 
   - platform: integration
     source: sensor.waermepumpe_strom_kuehlen
-    name: "Wärmepumpe Strom Kühlen (kumuliert)"
-    unique_id: waermepumpe_strom_kuehlen_kumuliert
+    name: "Waermepumpe Strom Kuehlen (kumuliert)"
+    unique_id: waermepumpe_strom_kuehlen_kumuliert_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -365,8 +365,8 @@ sensor:
 
   - platform: integration
     source: sensor.waermepumpe_ertrag_kuehlen
-    name: "Wärmepumpe Ertrag Kühlen (kumuliert)"
-    unique_id: waermepumpe_ertrag_kuehlen_kumuliert
+    name: "Waermepumpe Ertrag Kuehlen (kumuliert)"
+    unique_id: waermepumpe_ertrag_kuehlen_kumuliert_v2
     unit_prefix: k
     unit_time: h
     method: trapezoidal
@@ -375,11 +375,11 @@ sensor:
 utility_meter:
   waermepumpe_stromverbrauch_taeglich:
     source: sensor.waermepumpe_stromverbrauch
-    name: "Wärmepumpe Stromverbrauch (heute)"
+    name: "Waermepumpe Stromverbrauch Taeglich"
     cycle: daily
   waermepumpe_waermeertrag_taeglich:
     source: sensor.waermepumpe_waermeertrag
-    name: "Wärmepumpe Wärmeertrag (heute)"
+    name: "Waermepumpe Waermeertrag Taeglich"
     cycle: daily
 
 #homeassistant:

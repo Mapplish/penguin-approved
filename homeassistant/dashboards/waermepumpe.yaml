@@ -197,9 +197,8 @@ views:
 
       - type: statistics-graph
         title: COP-Verlauf (30 Tage)
-        period:
-          calendar:
-            period: day
+        period: day
+        days_to_show: 30
         stat_types:
           - mean
         entities:
@@ -210,9 +209,8 @@ views:
 
       - type: statistics-graph
         title: Energie-Verlauf (30 Tage)
-        period:
-          calendar:
-            period: day
+        period: day
+        days_to_show: 30
         stat_types:
           - sum
         entities:
