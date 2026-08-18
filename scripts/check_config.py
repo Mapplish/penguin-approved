@@ -123,22 +123,47 @@ def extract_entity_references(text: str):
     return set(re.findall(r"\bsensor\.[a-z0-9_]+\b", text))
 
 
+def check_lovelace_dashboard_urls(config: dict):
+    """HA requires every lovelace dashboard's url_path (the YAML key under
+    lovelace->dashboards) to contain a hyphen. Missing this doesn't just
+    break that one dashboard -- it fails the whole 'lovelace' integration,
+    which cascades into 'frontend', 'hacs', 'logbook', 'panel_custom' and
+    everything else that depends on them. Caught the hard way once
+    already; never again."""
+    problems = []
+    dashboards = (config or {}).get("lovelace", {}).get("dashboards", {}) or {}
+    for url_path in dashboards:
+        if "-" not in str(url_path):
+            problems.append(
+                f"lovelace dashboard url_path '{url_path}' has no hyphen -- "
+                f"HA will refuse to set up the ENTIRE lovelace integration "
+                f"(and everything depending on frontend/hacs/logbook with it). "
+                f"Rename the key to include a '-', e.g. '{url_path}-x'."
+            )
+    return problems
+
+
 def main() -> int:
     problems = []
 
     yaml_files = [CONFIG_YAML] + sorted(HA_DIR.rglob("*.yaml"))
     yaml_files = [p for p in yaml_files if p.exists()]
 
+    parsed_config = None
     for path in yaml_files:
-        _, err = load_yaml_safely(path)
+        parsed, err = load_yaml_safely(path)
         if err:
             problems.append(f"YAML syntax error in {path.relative_to(REPO_ROOT)}:\n  {err}")
+        elif path == CONFIG_YAML:
+            parsed_config = parsed
 
     if problems:
         # Don't bother with semantic checks if a file doesn't even parse.
         for p in problems:
             print("FAIL:", p)
         return 1
+
+    problems.extend(check_lovelace_dashboard_urls(parsed_config))
 
     config_text = CONFIG_YAML.read_text(encoding="utf-8")
     defined, unique_ids = extract_defined_sensors(config_text)
