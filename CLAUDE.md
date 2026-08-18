@@ -75,6 +75,18 @@ sind darüber sichtbar.
   Anzeige-Namen gehören in die `name:`-Overrides der Dashboard-Cards, nicht
   in den internen Sensornamen. `scripts/check_config.py` prüft das vor
   jedem Deploy automatisch.
+- **Lovelace-Dashboard-URL-Pfade brauchen zwingend einen Bindestrich**
+  (z.B. `raum-klima`, nicht `raumklima`) — sonst schlägt die komplette
+  `lovelace`-Integration fehl und reißt `frontend`/`hacs`/`logbook` mit.
+  Auch von `scripts/check_config.py` geprüft.
+- **Markdown-Card-Content mit Jinja-Schleifen/Tabellen**: `content: >`
+  (gefaltetes YAML) verwandelt Zeilenumbrüche in Leerzeichen — eine
+  Markdown-Tabelle landet dann in einer Zeile und rendert nicht. Für
+  Templates mit mehrzeiliger Ausgabe `content: |` (literal) nutzen und bei
+  Kontrollstrukturen (`{% for %}`, `{% if %}`) explizite Whitespace-Trim-
+  Marker (`{%- ... -%}`) setzen, sonst bleibt pro Tag-Zeile eine Leerzeile
+  übrig. Vor dem Deploy mit `POST /api/template` (Supervisor-Proxy, siehe
+  eBUS-Doku) gegentesten — schneller Feedback-Loop ohne Dashboard-Push.
 
 ## eBUS/Vaillant-Wissen
 Register-Bedeutungen, Enum-Werte (z.B. `rundatastatuscode` für den
