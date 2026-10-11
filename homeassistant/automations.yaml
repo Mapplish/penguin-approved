@@ -493,3 +493,29 @@
     entity_id: f29e04749fb19080593796ff92f7cac6
     type: close
   mode: single
+- id: '1791729799170'
+  alias: Batteriewarnung unter 10%
+  description: Taeglicher Check auf alle Batteriesensoren unter 10%, E-Mail-Alarm falls welche gefunden werden.
+  triggers:
+  - trigger: time
+    at: '08:00:00'
+  conditions:
+  - condition: template
+    value_template: >
+      {{ states.sensor
+           | selectattr('attributes.device_class', 'defined')
+           | selectattr('attributes.device_class', 'eq', 'battery')
+           | rejectattr('state', 'in', ['unknown', 'unavailable'])
+           | map(attribute='state') | map('float', 100) | select('lt', 10) | list | length > 0 }}
+  actions:
+  - action: notify.email_alerts
+    data:
+      title: "Batteriewarnung Home Assistant"
+      message: >
+        Folgende Batterien sind unter 10%:
+        {% for s in states.sensor if s.attributes.get('device_class') == 'battery'
+           and s.state not in ['unknown', 'unavailable']
+           and (s.state | float(100)) < 10 %}
+        - {{ s.name }}: {{ s.state }}%
+        {% endfor %}
+  mode: single

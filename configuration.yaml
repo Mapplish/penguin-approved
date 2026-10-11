@@ -16,6 +16,19 @@ notify:
       - service: mobile_app_pixel_9a
       - service: mobile_app_cph2211
 
+  - platform: smtp
+    name: email_alerts
+    server: smtp.gmail.com
+    port: 587
+    encryption: starttls
+    timeout: 15
+    sender: !secret gmail_user
+    username: !secret gmail_user
+    password: !secret gmail_app_password
+    recipient:
+      - !secret gmail_user
+    sender_name: "Penguin Approved"
+
 template:
   - sensor:
       - name: "Next Cover Automation"
