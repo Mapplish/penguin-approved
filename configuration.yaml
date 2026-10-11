@@ -102,7 +102,7 @@ template:
 
       - name: "Waermepumpe Strom Heizen"
         unique_id: waermepumpe_strom_heizen_v2
-        unit_of_measurement: "W"
+        unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
         state: >
@@ -114,7 +114,7 @@ template:
 
       - name: "Waermepumpe Ertrag Heizen"
         unique_id: waermepumpe_ertrag_heizen_v2
-        unit_of_measurement: "W"
+        unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
         state: >
@@ -126,7 +126,7 @@ template:
 
       - name: "Waermepumpe Strom Warmwasser"
         unique_id: waermepumpe_strom_warmwasser_v2
-        unit_of_measurement: "W"
+        unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
         state: >
@@ -138,7 +138,7 @@ template:
 
       - name: "Waermepumpe Ertrag Warmwasser"
         unique_id: waermepumpe_ertrag_warmwasser_v2
-        unit_of_measurement: "W"
+        unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
         state: >
@@ -150,7 +150,7 @@ template:
 
       - name: "Waermepumpe Strom Kuehlen"
         unique_id: waermepumpe_strom_kuehlen_v2
-        unit_of_measurement: "W"
+        unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
         state: >
@@ -162,7 +162,7 @@ template:
 
       - name: "Waermepumpe Ertrag Kuehlen"
         unique_id: waermepumpe_ertrag_kuehlen_v2
-        unit_of_measurement: "W"
+        unit_of_measurement: "kW"
         device_class: power
         state_class: measurement
         state: >
@@ -304,7 +304,6 @@ sensor:
     source: sensor.heating_ebusd_hmu_currentconsumedpower
     name: "Waermepumpe Stromverbrauch"
     unique_id: waermepumpe_stromverbrauch_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -313,7 +312,6 @@ sensor:
     source: sensor.heating_ebusd_hmu_currentyieldpower
     name: "Waermepumpe Waermeertrag"
     unique_id: waermepumpe_waermeertrag_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -322,7 +320,6 @@ sensor:
     source: sensor.waermepumpe_strom_heizen
     name: "Waermepumpe Strom Heizen (kumuliert)"
     unique_id: waermepumpe_strom_heizen_kumuliert_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -331,7 +328,6 @@ sensor:
     source: sensor.waermepumpe_ertrag_heizen
     name: "Waermepumpe Ertrag Heizen (kumuliert)"
     unique_id: waermepumpe_ertrag_heizen_kumuliert_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -340,7 +336,6 @@ sensor:
     source: sensor.waermepumpe_strom_warmwasser
     name: "Waermepumpe Strom Warmwasser (kumuliert)"
     unique_id: waermepumpe_strom_warmwasser_kumuliert_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -349,7 +344,6 @@ sensor:
     source: sensor.waermepumpe_ertrag_warmwasser
     name: "Waermepumpe Ertrag Warmwasser (kumuliert)"
     unique_id: waermepumpe_ertrag_warmwasser_kumuliert_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -358,7 +352,6 @@ sensor:
     source: sensor.waermepumpe_strom_kuehlen
     name: "Waermepumpe Strom Kuehlen (kumuliert)"
     unique_id: waermepumpe_strom_kuehlen_kumuliert_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
@@ -367,7 +360,6 @@ sensor:
     source: sensor.waermepumpe_ertrag_kuehlen
     name: "Waermepumpe Ertrag Kuehlen (kumuliert)"
     unique_id: waermepumpe_ertrag_kuehlen_kumuliert_v2
-    unit_prefix: k
     unit_time: h
     method: trapezoidal
     round: 3
