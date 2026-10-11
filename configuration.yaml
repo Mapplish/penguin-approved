@@ -387,9 +387,6 @@ utility_meter:
     name: "Waermepumpe Waermeertrag Taeglich"
     cycle: daily
 
-#homeassistant:
-#  packages: !include_dir_named integrations
-
 lovelace:
   mode: yaml
   resources:
