@@ -524,22 +524,56 @@
         {% set ns = namespace(low=[], dead=[]) %}
         {% for s in states.sensor if s.attributes.get('device_class') == 'battery' %}
           {% if s.state not in ['unknown', 'unavailable'] and (s.state | float(100)) < 10 %}
-            {% set ns.low = ns.low + [s.name ~ ': ' ~ s.state ~ '%'] %}
+            {% set ns.low = ns.low + [{'name': s.name, 'val': s.state | float}] %}
           {% elif s.state in ['unknown', 'unavailable'] %}
-            {% set ns.dead = ns.dead + [s.name ~ ' (' ~ s.state ~ ')'] %}
+            {% set ns.dead = ns.dead + [s.name] %}
           {% endif %}
         {% endfor %}
-        {% if ns.low %}
-        Batterien unter 10%:
-        {% for i in ns.low %}
-        - {{ i }}
+        {% set low_sorted = ns.low | sort(attribute='val') %}
+        {% if low_sorted %}
+        Batterien unter 10% (kritischste zuerst):
+        {% for i in low_sorted %}
+        - {{ i.name }}: {{ i.val }}%
         {% endfor %}
         {% endif %}
         {% if ns.dead %}
 
-        Batteriesensoren nicht erreichbar (moeglicherweise leer/offline):
+        Nicht erreichbar (moeglicherweise leer/offline):
         {% for i in ns.dead %}
         - {{ i }}
         {% endfor %}
         {% endif %}
+      data:
+        html: >
+          <!DOCTYPE html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;">
+          <h2 style="margin:0 0 12px 0;">Batteriewarnung Home Assistant</h2>
+          {% set ns = namespace(low=[], dead=[]) %}
+          {% for s in states.sensor if s.attributes.get('device_class') == 'battery' %}
+            {% if s.state not in ['unknown', 'unavailable'] and (s.state | float(100)) < 10 %}
+              {% set ns.low = ns.low + [{'name': s.name, 'val': s.state | float}] %}
+            {% elif s.state in ['unknown', 'unavailable'] %}
+              {% set ns.dead = ns.dead + [s.name] %}
+            {% endif %}
+          {% endfor %}
+          {% set low_sorted = ns.low | sort(attribute='val') %}
+          <table style="border-collapse:collapse;width:100%;max-width:480px;">
+          <tr>
+            <th style="text-align:left;padding:6px 10px;border-bottom:2px solid #333;">Geraet</th>
+            <th style="text-align:right;padding:6px 10px;border-bottom:2px solid #333;">Status</th>
+          </tr>
+          {% for i in low_sorted %}
+          {% set color = '#d32f2f' if i.val < 5 else '#f57c00' %}
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #ddd;">{{ i.name }}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:right;color:{{ color }};font-weight:bold;">{{ i.val }}%</td>
+          </tr>
+          {% endfor %}
+          {% for i in ns.dead %}
+          <tr>
+            <td style="padding:6px 10px;border-bottom:1px solid #ddd;">{{ i }}</td>
+            <td style="padding:6px 10px;border-bottom:1px solid #ddd;text-align:right;color:#757575;">nicht erreichbar</td>
+          </tr>
+          {% endfor %}
+          </table>
+          </body></html>
   mode: single
