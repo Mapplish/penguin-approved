@@ -494,28 +494,52 @@
     type: close
   mode: single
 - id: '1791729799170'
-  alias: Batteriewarnung unter 10%
-  description: Taeglicher Check auf alle Batteriesensoren unter 10%, E-Mail-Alarm falls welche gefunden werden.
+  alias: Batteriewarnung unter 10% oder nicht erreichbar
+  description: >-
+    Taeglicher Check auf alle Batteriesensoren: unter 10% UND
+    unavailable/unknown (z.B. Geraet komplett tot, meldet keinen Prozentwert
+    mehr). E-Mail-Alarm falls welche gefunden werden.
   triggers:
   - trigger: time
     at: '08:00:00'
   conditions:
   - condition: template
     value_template: >
-      {{ states.sensor
+      {% set low = states.sensor
            | selectattr('attributes.device_class', 'defined')
            | selectattr('attributes.device_class', 'eq', 'battery')
            | rejectattr('state', 'in', ['unknown', 'unavailable'])
-           | map(attribute='state') | map('float', 100) | select('lt', 10) | list | length > 0 }}
+           | map(attribute='state') | map('float', 100) | select('lt', 10) | list | length %}
+      {% set dead = states.sensor
+           | selectattr('attributes.device_class', 'defined')
+           | selectattr('attributes.device_class', 'eq', 'battery')
+           | selectattr('state', 'in', ['unknown', 'unavailable'])
+           | list | length %}
+      {{ (low + dead) > 0 }}
   actions:
   - action: notify.email_alerts
     data:
       title: "Batteriewarnung Home Assistant"
       message: >
-        Folgende Batterien sind unter 10%:
-        {% for s in states.sensor if s.attributes.get('device_class') == 'battery'
-           and s.state not in ['unknown', 'unavailable']
-           and (s.state | float(100)) < 10 %}
-        - {{ s.name }}: {{ s.state }}%
+        {% set ns = namespace(low=[], dead=[]) %}
+        {% for s in states.sensor if s.attributes.get('device_class') == 'battery' %}
+          {% if s.state not in ['unknown', 'unavailable'] and (s.state | float(100)) < 10 %}
+            {% set ns.low = ns.low + [s.name ~ ': ' ~ s.state ~ '%'] %}
+          {% elif s.state in ['unknown', 'unavailable'] %}
+            {% set ns.dead = ns.dead + [s.name ~ ' (' ~ s.state ~ ')'] %}
+          {% endif %}
         {% endfor %}
+        {% if ns.low %}
+        Batterien unter 10%:
+        {% for i in ns.low %}
+        - {{ i }}
+        {% endfor %}
+        {% endif %}
+        {% if ns.dead %}
+
+        Batteriesensoren nicht erreichbar (moeglicherweise leer/offline):
+        {% for i in ns.dead %}
+        - {{ i }}
+        {% endfor %}
+        {% endif %}
   mode: single
