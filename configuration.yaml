@@ -313,12 +313,17 @@ sensor:
       - id: 1063827
         name: Holy Grail (A2PKXG)
 
+  # method: left, not trapezoidal: sources sit at 0 for hours and then step
+  # up, and trapezoidal credits (0+X)/2 over the whole idle gap — massive
+  # overcount. max_sub_interval keeps totals ticking while the source is flat.
   - platform: integration
     source: sensor.heating_ebusd_hmu_currentconsumedpower
     name: "Waermepumpe Stromverbrauch"
     unique_id: waermepumpe_stromverbrauch_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -326,7 +331,9 @@ sensor:
     name: "Waermepumpe Waermeertrag"
     unique_id: waermepumpe_waermeertrag_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -334,7 +341,9 @@ sensor:
     name: "Waermepumpe Strom Heizen (kumuliert)"
     unique_id: waermepumpe_strom_heizen_kumuliert_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -342,7 +351,9 @@ sensor:
     name: "Waermepumpe Ertrag Heizen (kumuliert)"
     unique_id: waermepumpe_ertrag_heizen_kumuliert_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -350,7 +361,9 @@ sensor:
     name: "Waermepumpe Strom Warmwasser (kumuliert)"
     unique_id: waermepumpe_strom_warmwasser_kumuliert_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -358,7 +371,9 @@ sensor:
     name: "Waermepumpe Ertrag Warmwasser (kumuliert)"
     unique_id: waermepumpe_ertrag_warmwasser_kumuliert_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -366,7 +381,9 @@ sensor:
     name: "Waermepumpe Strom Kuehlen (kumuliert)"
     unique_id: waermepumpe_strom_kuehlen_kumuliert_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
   - platform: integration
@@ -374,17 +391,21 @@ sensor:
     name: "Waermepumpe Ertrag Kuehlen (kumuliert)"
     unique_id: waermepumpe_ertrag_kuehlen_kumuliert_v2
     unit_time: h
-    method: trapezoidal
+    method: left
+    max_sub_interval:
+      minutes: 1
     round: 3
 
 utility_meter:
   waermepumpe_stromverbrauch_taeglich:
     source: sensor.waermepumpe_stromverbrauch
     name: "Waermepumpe Stromverbrauch Taeglich"
+    unique_id: waermepumpe_stromverbrauch_taeglich
     cycle: daily
   waermepumpe_waermeertrag_taeglich:
     source: sensor.waermepumpe_waermeertrag
     name: "Waermepumpe Waermeertrag Taeglich"
+    unique_id: waermepumpe_waermeertrag_taeglich
     cycle: daily
 
 lovelace:
