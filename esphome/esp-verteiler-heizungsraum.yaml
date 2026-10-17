@@ -1,0 +1,38 @@
+# Board: Generic ESP32 Board (Generic)
+# Definition: definitions/boards/generic-esp32/manifest.yaml
+
+esphome:
+  name: esp-verteiler-heizungsraum
+  friendly_name: esp-verteiler-heizungsraum
+
+esp32:
+  variant: esp32
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: !secret esp_verteiler_heizungsraum_api_key
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  ap:
+    ssid: esp-verteiler-h Fallback Hotspot
+    password: !secret esp_verteiler_heizungsraum_ap_password
+
+captive_portal:
+
+one_wire:
+  - platform: gpio
+    pin: GPIO4
+
+sensor:
+  - platform: dallas_temp
+    address: 0x6c000000d5470d28
+    name: "Ruecklauf Kreis oben"
