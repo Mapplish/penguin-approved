@@ -50,3 +50,6 @@ www/community/
 start-penguin.ps1
 start-ssh.ps1
 start-claude.ps1
+
+# Generierte Reports (Watchman)
+watchman_report.txt
