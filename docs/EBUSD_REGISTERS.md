@@ -19,6 +19,26 @@ exposed entities) — most of the `hmu`/`ctlv2` power, mode and status
 entities used for COP tracking are not exposed, so this is the only way to
 inspect them live.
 
+**HA values can be stale.** ebusd only polls some registers rarely (e.g.
+`ctlv2 Hc1SummerTempLimit` still showed the old value in HA hours after it
+was changed on the sensoCOMFORT, `last_updated` unchanged). To get the real
+current value, force a bus read through the ebusd add-on's TCP command port
+(hostname = add-on slug with `_` → `-`):
+
+```
+ssh penguin-pi "bash -lc 'timeout 8 bash -c \"exec 3<>/dev/tcp/b4d7ad18-ebusd/8888 && printf \\\"read -f -c ctlv2 Hc1SummerTempLimit\\\\n\\\" >&3 && timeout 5 head -n1 <&3\"'"
+```
+
+This forced read does **not** push the new value into the HA entity.
+
+### Polling resolution
+
+The `hmu` live values (`flowtemp`, `currentconsumedpower`,
+`currentyieldpower`) only update about every 24 min, and
+`rundatastatuscode` can miss short state changes entirely. When counting
+compressor cycles, use the `runstatscompressorstarts` counter instead. It
+records every start.
+
 ## Key enums
 
 ### `sensor.heating_ebusd_hmu_rundatastatuscode`
