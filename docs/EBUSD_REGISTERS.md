@@ -39,6 +39,21 @@ The `hmu` live values (`flowtemp`, `currentconsumedpower`,
 compressor cycles, use the `runstatscompressorstarts` counter instead. It
 records every start.
 
+The polls are staggered: `flowtemp` and the power values arrive ~40 s
+*before* `rundatastatuscode` in each cycle, so a status-gated flow value
+can pair a new flow reading with the previous cycle's status (seen
+2026-10-18: compressor already off, status still `heat_compressor_active`,
+26 °C accepted as heating flow). There is also a `heat_compressor_shutdown`
+status, which a naive `startswith('heat_')` check treats as heating.
+
+**Minute-resolution alternative:** `hmu_status01_temp` (flow) and
+`hmu_status01_temp_1` (return, at the heat pump) are filled passively from
+the controller's own `hmu Status01` reads and update roughly every minute,
+at 0.5 K resolution. `status01_temp` tracks `flowtemp` closely (31.0 vs
+31.19 on 2026-10-18); the return assignment is inferred, not confirmed on
+the display. Compressor on/off is visible there within a minute (flow drops
+to ≈ return), long before `rundatastatuscode` catches up.
+
 ## Key enums
 
 ### `sensor.heating_ebusd_hmu_rundatastatuscode`
