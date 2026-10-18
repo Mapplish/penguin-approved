@@ -19,27 +19,25 @@ views:
           - entity: sensor.heating_ebusd_broadcast_outsidetemp
             name: Außentemperatur
 
-      # Each new return sensor gets a row under "Rückläufe" and its
-      # sensor.spreizung_* (configuration.yaml) a row under "Spreizung";
-      # display names are room names, ESPHome names stay the physical labels.
-      - type: entities
+      # One tuple per heating circuit: (room name, return sensor, spread
+      # sensor from configuration.yaml). Room names are display-only, the
+      # ESPHome names stay the physical labels at the distributor.
+      - type: markdown
         title: Heizen
-        show_header_toggle: false
-        entities:
-          - entity: sensor.heizvorlauf
-            name: Heizvorlauf
-          - type: section
-            label: Rückläufe
-          - entity: sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben
-            name: Kaminzimmer 1
-          - entity: sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten
-            name: Kaminzimmer 2
-          - type: section
-            label: Spreizung (Vorlauf − Rücklauf)
-          - entity: sensor.spreizung_kaminzimmer_1
-            name: Kaminzimmer 1
-          - entity: sensor.spreizung_kaminzimmer_2
-            name: Kaminzimmer 2
+        content: |
+          {%- macro fmt(e, unit) -%}
+          {{ (states(e) | float | round(1) | string | replace('.', ',') ~ ' ' ~ unit) if is_number(states(e)) else '–' }}
+          {%- endmacro -%}
+          **Heizvorlauf:** {{ fmt('sensor.heizvorlauf', '°C') if is_number(states('sensor.heizvorlauf')) else 'kein Heizbetrieb' }}
+
+          | Raum | Rücklauf | Spreizung |
+          |:--|--:|--:|
+          {%- for room, rl, sp in [
+            ('Kaminzimmer 1', 'sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben', 'sensor.spreizung_kaminzimmer_1'),
+            ('Kaminzimmer 2', 'sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten', 'sensor.spreizung_kaminzimmer_2'),
+          ] %}
+          | {{ room }} | {{ fmt(rl, '°C') }} | {{ fmt(sp, 'K') }} |
+          {%- endfor %}
 
   - title: Einstellungen
     path: einstellungen
