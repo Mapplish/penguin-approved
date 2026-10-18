@@ -56,6 +56,16 @@ storage, pump state — measured by the heat pump's own internal sensors
 in its hydraulic block. Compressor on/off is visible there within a minute (flow drops
 to ≈ return), long before `rundatastatuscode` catches up.
 
+`hmu_status01_pumpstate` (`off`/`on`/`overrun`/`hwc`) is the cleanest
+minute-level "what is it doing" signal: `on` while space heating, `hwc`
+during hot water, `off` within a minute of the compressor stopping. The
+`runstatscompressorstarts` counter, by contrast, is itself only polled
+every ~24 min. Observed 2026-10-18 the counter ticked 20 min after the
+pump went `on` and the flow had already risen. `sensor.heizvorlauf` is
+gated on `pumpstate == 'on'` for ≥ 5 min, which skips the cold-start
+minutes and the hot water leftover after a `hwc` → `on` switch (55 °C
+falling to 32 °C within 5 min).
+
 ## Key enums
 
 ### `sensor.heating_ebusd_hmu_rundatastatuscode`
