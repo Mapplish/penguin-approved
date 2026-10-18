@@ -298,6 +298,34 @@ template:
         state: "{{ states('sensor.heating_ebusd_hmu_flowtemp') | float }}"
         icon: mdi:thermometer-chevron-up
 
+      # Flow/return spread per heating circuit (basis for hydraulic
+      # balancing). Only available while Heizvorlauf is, i.e. while heating.
+      # Name/entity_id use the room, the ESPHome sensor keeps the physical
+      # label at the distributor.
+      - name: "Spreizung Kaminzimmer 1"
+        unique_id: spreizung_kaminzimmer_1
+        unit_of_measurement: "K"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.heizvorlauf'))
+             and is_number(states('sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben')) }}
+        state: >
+          {{ (states('sensor.heizvorlauf') | float
+              - states('sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben') | float) | round(1) }}
+        icon: mdi:thermometer-minus
+
+      - name: "Spreizung Kaminzimmer 2"
+        unique_id: spreizung_kaminzimmer_2
+        unit_of_measurement: "K"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.heizvorlauf'))
+             and is_number(states('sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten')) }}
+        state: >
+          {{ (states('sensor.heizvorlauf') | float
+              - states('sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten') | float) | round(1) }}
+        icon: mdi:thermometer-minus
+
 #template:
 # - sensor:
 #    - name: "Next Cover Automation"

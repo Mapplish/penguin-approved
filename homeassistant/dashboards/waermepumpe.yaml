@@ -19,7 +19,8 @@ views:
           - entity: sensor.heating_ebusd_broadcast_outsidetemp
             name: Außentemperatur
 
-      # Rows for further return sensors go below the "Rückläufe" section;
+      # Each new return sensor gets a row under "Rückläufe" and its
+      # sensor.spreizung_* (configuration.yaml) a row under "Spreizung";
       # display names are room names, ESPHome names stay the physical labels.
       - type: entities
         title: Heizen
@@ -32,6 +33,12 @@ views:
           - entity: sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben
             name: Kaminzimmer 1
           - entity: sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten
+            name: Kaminzimmer 2
+          - type: section
+            label: Spreizung (Vorlauf − Rücklauf)
+          - entity: sensor.spreizung_kaminzimmer_1
+            name: Kaminzimmer 1
+          - entity: sensor.spreizung_kaminzimmer_2
             name: Kaminzimmer 2
 
   - title: Einstellungen
