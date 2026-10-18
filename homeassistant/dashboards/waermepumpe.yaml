@@ -19,6 +19,21 @@ views:
           - entity: sensor.heating_ebusd_broadcast_outsidetemp
             name: Außentemperatur
 
+      # Rows for further return sensors go below the "Rückläufe" section;
+      # display names are room names, ESPHome names stay the physical labels.
+      - type: entities
+        title: Heizen
+        show_header_toggle: false
+        entities:
+          - entity: sensor.heizvorlauf
+            name: Heizvorlauf
+          - type: section
+            label: Rückläufe
+          - entity: sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben
+            name: Kaminzimmer 1
+          - entity: sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten
+            name: Kaminzimmer 2
+
   - title: Einstellungen
     path: einstellungen
     icon: mdi:tune

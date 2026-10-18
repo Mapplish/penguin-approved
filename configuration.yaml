@@ -279,6 +279,25 @@ template:
           {{ (h / s) | round(2) }}
         icon: mdi:clock-outline
 
+      # Flow temperature during space heating only. hmu FlowTemp is measured
+      # in every mode (hot water runs push it to ~55°C) and is only polled
+      # every ~24 min, so the value must also have been reported after the
+      # current heat_* phase started, otherwise it's a leftover from before.
+      - name: "Heizvorlauf"
+        unique_id: heizvorlauf
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        availability: >
+          {% set s = states.sensor.heating_ebusd_hmu_rundatastatuscode %}
+          {% set f = states.sensor.heating_ebusd_hmu_flowtemp %}
+          {{ s is not none and f is not none
+             and s.state.startswith('heat_')
+             and f.last_reported >= s.last_changed
+             and is_number(f.state) }}
+        state: "{{ states('sensor.heating_ebusd_hmu_flowtemp') | float }}"
+        icon: mdi:thermometer-chevron-up
+
 #template:
 # - sensor:
 #    - name: "Next Cover Automation"
