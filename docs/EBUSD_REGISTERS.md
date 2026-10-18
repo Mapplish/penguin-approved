@@ -50,8 +50,10 @@ status, which a naive `startswith('heat_')` check treats as heating.
 `hmu_status01_temp_1` (return, at the heat pump) are filled passively from
 the controller's own `hmu Status01` reads and update roughly every minute,
 at 0.5 K resolution. `status01_temp` tracks `flowtemp` closely (31.0 vs
-31.19 on 2026-10-18); the return assignment is inferred, not confirmed on
-the display. Compressor on/off is visible there within a minute (flow drops
+31.19 on 2026-10-18). Field meanings per the ebusd definition (`find -F
+fields,comment -c hmu Status01`): flow, return, outside, hot water,
+storage, pump state — measured by the heat pump's own internal sensors
+in its hydraulic block. Compressor on/off is visible there within a minute (flow drops
 to ≈ return), long before `rundatastatuscode` catches up.
 
 ## Key enums
