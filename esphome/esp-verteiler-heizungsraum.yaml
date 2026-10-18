@@ -36,8 +36,18 @@ sensor:
   - platform: dallas_temp
     address: 0x6c000000d5470d28
     name: "Ruecklauf Kreis oben"
-    update_interval: 5s
+    # Sample every 10s, send the 1-min mean to HA (enough resolution for
+    # warm-up curves in hydraulic balancing, without 5s recorder spam)
+    update_interval: 10s
+    filters:
+      - sliding_window_moving_average:
+          window_size: 6
+          send_every: 6
   - platform: dallas_temp
     address: 0x68000000d3a85428
     name: "Ruecklauf Kreis unten"
-    update_interval: 5s
+    update_interval: 10s
+    filters:
+      - sliding_window_moving_average:
+          window_size: 6
+          send_every: 6

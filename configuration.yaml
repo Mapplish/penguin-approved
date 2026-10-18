@@ -9,6 +9,12 @@ automation: !include homeassistant/automations.yaml
 script: !include homeassistant/scripts.yaml
 scene: !include homeassistant/scenes.yaml
 
+# Raw state history for detailed analyses (heating phases, hydraulic
+# balancing). Default is 10 days; at ~31 MB/day 90 days is ~3 GB on the SD
+# card. Hourly long-term statistics are kept forever regardless.
+recorder:
+  purge_keep_days: 90
+
 notify:
   - platform: group
     name: ha_alarm_phones
