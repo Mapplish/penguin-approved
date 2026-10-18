@@ -36,3 +36,8 @@ sensor:
   - platform: dallas_temp
     address: 0x6c000000d5470d28
     name: "Ruecklauf Kreis oben"
+    update_interval: 5s
+  - platform: dallas_temp
+    address: 0x68000000d3a85428
+    name: "Ruecklauf Kreis unten"
+    update_interval: 5s
