@@ -66,6 +66,25 @@ gated on `pumpstate == 'on'` for ≥ 5 min, which skips the cold-start
 minutes and the hot water leftover after a `hwc` → `on` switch (55 °C
 falling to 32 °C within 5 min).
 
+### Compressor start/stop: `hmu EnergyIntegral`
+
+`sensor.heating_ebusd_hmu_energyintegral` (°min, signed) is the controller's
+degree-minute balance of flow vs. target. Only polled every ~24 min, so it
+rarely catches the exact switch points, but on 2026-10-19 it read −60/−61
+within a minute of each compressor start (04:28/06:30/08:32 UTC) and climbed
+back to ≈ 0 by each stop. So: **start at −60 °min** (Vaillant default),
+stop around 0. A forced read (`read -f -c hmu EnergyIntegral`) gives the
+live value. `hmu CompressorBlocktime` (min) read 0 while idle and is
+presumably the remaining minimum-off lock. The ~20 min pauses in long
+cold-night cycles (2026-10-17/18) match such a lock. No hysteresis or
+start-threshold *setting* is exposed in the ebusd `hmu`/`ctlv2` catalog.
+
+Firmware per `scan result` (2026-10-19): HMU00 SW 0902, CTLV2 SW 0514.
+Forums report an energy-integral bug on older HMU firmware (e.g.
+351.06.07: integral counted 30 s steps as full minutes → ~2x cycles,
+1.4–1.9 starts per compressor hour). Here 8569 starts / 14639 h = 0.59, so
+not affected.
+
 ## Key enums
 
 ### `sensor.heating_ebusd_hmu_rundatastatuscode`
