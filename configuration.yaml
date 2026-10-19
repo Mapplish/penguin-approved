@@ -305,6 +305,31 @@ template:
         state: "{{ states('sensor.heating_ebusd_hmu_status01_temp') | float }}"
         icon: mdi:thermometer-chevron-up
 
+      # Return temperature at the heat pump (Status01 temp_1), gated exactly
+      # like Heizvorlauf so flow, return and spread share the same window.
+      - name: "Heizruecklauf"
+        unique_id: heizruecklauf
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.heizvorlauf'))
+             and is_number(states('sensor.heating_ebusd_hmu_status01_temp_1')) }}
+        state: "{{ states('sensor.heating_ebusd_hmu_status01_temp_1') | float }}"
+        icon: mdi:thermometer-chevron-down
+
+      - name: "Spreizung Waermepumpe"
+        unique_id: spreizung_waermepumpe
+        unit_of_measurement: "K"
+        state_class: measurement
+        availability: >
+          {{ is_number(states('sensor.heizvorlauf'))
+             and is_number(states('sensor.heizruecklauf')) }}
+        state: >
+          {{ (states('sensor.heizvorlauf') | float
+              - states('sensor.heizruecklauf') | float) | round(1) }}
+        icon: mdi:thermometer-minus
+
       # Flow/return spread per heating circuit (basis for hydraulic
       # balancing). Only available while Heizvorlauf is, i.e. while heating.
       # Name/entity_id use the room, the ESPHome sensor keeps the physical

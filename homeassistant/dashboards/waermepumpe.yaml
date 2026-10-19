@@ -20,7 +20,8 @@ views:
             name: Außentemperatur
 
       # One tuple per heating circuit: (room name, return sensor, spread
-      # sensor from configuration.yaml). Room names are display-only, the
+      # sensor from configuration.yaml). First row is the heat pump's own
+      # return (total over all circuits). Room names are display-only, the
       # ESPHome names stay the physical labels at the distributor.
       - type: markdown
         title: Heizen
@@ -33,6 +34,7 @@ views:
           | Raum | Rücklauf | Spreizung |
           |:--|--:|--:|
           {%- for room, rl, sp in [
+            ('Wärmepumpe', 'sensor.heizruecklauf', 'sensor.spreizung_waermepumpe'),
             ('Kaminzimmer 1', 'sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_oben', 'sensor.spreizung_kaminzimmer_1'),
             ('Kaminzimmer 2', 'sensor.esp_verteiler_heizungsraum_ruecklauf_kreis_unten', 'sensor.spreizung_kaminzimmer_2'),
           ] %}
