@@ -231,18 +231,12 @@
   description: >-
     One high-priority notification per door opening; further openings within
     the 2 min cooldown are dropped, returns from unavailable are ignored.
-    Only while the phone is away; an unknown tracker still notifies.
   triggers:
   - trigger: state
     entity_id: binary_sensor.eingang_tur_contact
     from: 'off'
     to: 'on'
-  conditions:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: device_tracker.pixel_9a
-      state: home
+  conditions: []
   actions:
   - action: notify.mobile_app_pixel_9a
     data:
