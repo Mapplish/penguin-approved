@@ -21,18 +21,8 @@ notify:
     services:
       - service: mobile_app_pixel_9a
 
-  - platform: smtp
-    name: email_alerts
-    server: smtp.gmail.com
-    port: 587
-    encryption: starttls
-    timeout: 15
-    sender: !secret gmail_user
-    username: !secret gmail_user
-    password: !secret gmail_app_password
-    recipient:
-      - !secret gmail_user
-    sender_name: "Penguin Approved"
+# SMTP (notify.email_alerts) lives in the UI config entry now: HA imported
+# the former YAML platform on 2026-10-11, the YAML block only failed on boot.
 
 template:
   - sensor:
