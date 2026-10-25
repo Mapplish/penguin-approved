@@ -381,6 +381,116 @@
     - binary_sensor.hobbyraum_leckage_water_leak
     - binary_sensor.heizungsraum_leckage_water_leak
     - binary_sensor.bar_leckage_water_leak
+- id: rauchalarm_ausloesen
+  alias: Rauchalarm – Auslösen
+  description: >-
+    Same pattern as the water alarm: rings via the Android alarm stream
+    (bypasses DND/silent) every minute until acknowledged on the phone or no
+    detector reports smoke/heat any more; then sends an all-clear.
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.rauchmelder_alle
+    to: 'on'
+    id: smoke
+  - trigger: state
+    entity_id: binary_sensor.rauchmelder_alle
+    from: 'on'
+    to: 'off'
+    id: clear
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: smoke
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.rauchalarm_gequittiert
+      - repeat:
+          while:
+          - condition: state
+            entity_id: input_boolean.rauchalarm_gequittiert
+            state: 'off'
+          - condition: state
+            entity_id: binary_sensor.rauchmelder_alle
+            state: 'on'
+          sequence:
+          - action: notify.ha_alarm_phones
+            data:
+              title: "🔥 Rauch-/Hitzealarm!"
+              message: >-
+                Alarm: {{ expand('binary_sensor.rauchmelder_alle')
+                | selectattr('state', 'eq', 'on') | map(attribute='name')
+                | map('regex_replace', '(?i) smoke$', '') | join(', ') }}
+                (seit {{ as_timestamp(start) | timestamp_custom('%H:%M') }})
+              data:
+                channel: alarm_stream
+                ttl: 0
+                priority: high
+                persistent: true
+                sticky: 'true'
+                tag: '{{ alarm_tag }}'
+                actions:
+                - action: ACK_SMOKE
+                  title: Quittieren
+          - delay: 00:01:00
+    - conditions:
+      - condition: trigger
+        id: clear
+      sequence:
+      - action: notify.ha_alarm_phones
+        data:
+          title: ✅ Rauchalarm Entwarnung
+          message: Kein Rauch- oder Hitzemelder meldet mehr Alarm.
+          data:
+            tag: '{{ alarm_tag }}'
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.rauchalarm_gequittiert
+  mode: restart
+  variables:
+    alarm_tag: rauchalarm
+    start: '{{ now() }}'
+- id: rauchalarm_quittieren
+  alias: Rauchalarm – Quittieren (Smartphone)
+  triggers:
+  - trigger: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: ACK_SMOKE
+  actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.rauchalarm_gequittiert
+  - action: notify.ha_alarm_phones
+    data:
+      message: clear_notification
+      data:
+        tag: rauchalarm
+  mode: single
+- id: rauchalarm_testtaste
+  alias: Rauchalarm – Testtaste
+  description: >-
+    Pressing a detector's test button sends one alarm-stream notification, so
+    each detector and the phone can be checked without real smoke.
+  triggers:
+  - trigger: state
+    entity_id: binary_sensor.rauchmelder_test
+    to: 'on'
+  actions:
+  - action: notify.ha_alarm_phones
+    data:
+      title: "\U0001F9EA Rauchmelder-Test"
+      message: >-
+        Test von: {{ expand('binary_sensor.rauchmelder_test')
+        | selectattr('state', 'eq', 'on') | map(attribute='name')
+        | map('regex_replace', '(?i) test$', '') | join(', ') }}
+      data:
+        channel: alarm_stream
+        ttl: 0
+        priority: high
+        tag: rauchalarm_test
+  mode: single
 - id: '1771147657780'
   alias: Warmwasser Zirkulation bei Bewegung
   description: Startet Zirkulationspumpe bei Bewegung, max alle 15 Minuten

@@ -476,6 +476,62 @@ utility_meter:
     unique_id: waermepumpe_waermeertrag_taeglich
     cycle: daily
 
+input_boolean:
+  rauchalarm_gequittiert:
+    name: Rauchalarm gequittiert
+    icon: mdi:smoke-detector-alert
+
+# Smoke + heat detectors (Heiman via Z2M; heat detectors also expose
+# `_smoke`). Groups keep the alarm automation free of 19-entry lists.
+binary_sensor:
+  - platform: group
+    name: "Rauchmelder Alle"
+    unique_id: rauchmelder_alle
+    device_class: smoke
+    entities:
+      - binary_sensor.buro_rauchmelder_smoke
+      - binary_sensor.eingang_rauchmelder_smoke
+      - binary_sensor.esszimmer_rauchmelder_smoke
+      - binary_sensor.wohnzimmer_rauchmelder_smoke
+      - binary_sensor.kaminzimmer_rauchmelder_smoke
+      - binary_sensor.garage_rauchmelder_smoke
+      - binary_sensor.obergeschoss_flur_rauchmelder_smoke
+      - binary_sensor.baby_rauchmelder_smoke
+      - binary_sensor.schlafzimmer_rauchmelder_smoke
+      - binary_sensor.kinderzimmer_rauchmelder_smoke
+      - binary_sensor.gastezimmer_rauchmelder_smoke
+      - binary_sensor.dachboden_rauchmelder_smoke
+      - binary_sensor.waschraum_rauchmelder_smoke
+      - binary_sensor.bar_rauchmelder_smoke
+      - binary_sensor.hobbyraum_rauchmelder_smoke
+      - binary_sensor.sportraum_rauchmelder_smoke
+      - binary_sensor.kuche_hitzemelder_smoke
+      - binary_sensor.badezimmer_hitzemelder_smoke
+      - binary_sensor.heizungsraum_hitzemelder_smoke
+  - platform: group
+    name: "Rauchmelder Test"
+    unique_id: rauchmelder_test
+    entities:
+      - binary_sensor.buro_rauchmelder_test
+      - binary_sensor.eingang_rauchmelder_test
+      - binary_sensor.esszimmer_rauchmelder_test
+      - binary_sensor.wohnzimmer_rauchmelder_test
+      - binary_sensor.kaminzimmer_rauchmelder_test
+      - binary_sensor.garage_rauchmelder_test
+      - binary_sensor.obergeschoss_flur_rauchmelder_test
+      - binary_sensor.baby_rauchmelder_test
+      - binary_sensor.schlafzimmer_rauchmelder_test
+      - binary_sensor.kinderzimmer_rauchmelder_test
+      - binary_sensor.gastezimmer_rauchmelder_test
+      - binary_sensor.dachboden_rauchmelder_test
+      - binary_sensor.waschraum_rauchmelder_test
+      - binary_sensor.bar_rauchmelder_test
+      - binary_sensor.hobbyraum_rauchmelder_test
+      - binary_sensor.sportraum_rauchmelder_test
+      - binary_sensor.kuche_hitzemelder_test
+      - binary_sensor.badezimmer_hitzemelder_test
+      - binary_sensor.heizungsraum_hitzemelder_test
+
 lovelace:
   mode: yaml
   resources:
