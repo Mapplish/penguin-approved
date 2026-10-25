@@ -515,6 +515,7 @@
     action: switch.turn_off
   - delay: 00:14:00
   mode: single
+  max_exceeded: silent
 - id: '1777398428408'
   alias: Büro Hoch
   description: ''
