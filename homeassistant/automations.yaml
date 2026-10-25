@@ -228,21 +228,28 @@
   mode: single
 - id: '1767350525494'
   alias: Notification - Eingang offen
-  description: ''
+  description: >-
+    One high-priority notification per door opening; further openings within
+    the 2 min cooldown are dropped, returns from unavailable are ignored.
   triggers:
-  - type: opened
-    device_id: 156f2f8a6de85f1680defdb7f209aa65
-    entity_id: c81f61ea388c0cd5ad540a3496efc4d9
-    domain: binary_sensor
-    trigger: device
+  - trigger: state
+    entity_id: binary_sensor.eingang_tur_contact
+    from: 'off'
+    to: 'on'
   conditions: []
   actions:
-  - device_id: 5c36e49a9468cdbf3d37567c049ffde9
-    domain: mobile_app
-    type: notify
-    message: Eingang offen
-    title: Eingang offen
+  - action: notify.mobile_app_pixel_9a
+    data:
+      title: "\U0001F6AA Eingang geöffnet"
+      message: Haustür um {{ now().strftime('%H:%M') }} geöffnet
+      data:
+        priority: high
+        ttl: 0
+        channel: Haustuer
+        tag: eingang_tuer
+  - delay: 00:02:00
   mode: single
+  max_exceeded: silent
 - id: '1767350553660'
   alias: Notification - Eingang geschlossen
   description: ''
