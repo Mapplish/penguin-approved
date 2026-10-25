@@ -261,9 +261,13 @@
     title: Eingang geschlossen
   mode: single
 - id: '1770557446099'
-  alias: Wasseralarm – Auslösen (Smartphones, 5 Min Limit)
+  alias: Wasseralarm – Auslösen
+  description: >-
+    Rings the phones via the Android alarm stream (bypasses DND/silent) every
+    minute until acknowledged or every leak sensor is dry again.
   triggers:
-  - entity_id:
+  - trigger: state
+    entity_id:
     - binary_sensor.waschraum_leckage_water_leak
     - binary_sensor.kuche_leckage_water_leak
     - binary_sensor.badezimmer_leckage_water_leak
@@ -271,91 +275,48 @@
     - binary_sensor.heizungsraum_leckage_water_leak
     - binary_sensor.bar_leckage_water_leak
     to: 'on'
-    trigger: state
   actions:
-  - target:
+  - action: input_boolean.turn_off
+    target:
       entity_id: input_boolean.wasseralarm_gequittiert
-    action: input_boolean.turn_off
-  - data:
-      title: "\U0001F6A8 Wasserleck erkannt!"
-      message: '{{ trigger.to_state.name or trigger.entity_id }} meldet Feuchtigkeit!
-
-        '
-      data:
-        ttl: 0
-        priority: high
-        importance: high
-        sticky: 'true'
-        channel: alarm
-        vibration: '3000'
-        sound: default
-        tag: '{{ alarm_tag }}'
-        actions:
-        - action: ACK_WATER
-          title: Quittieren
-    action: notify.ha_alarm_phones
   - repeat:
       while:
+      - condition: state
+        entity_id: input_boolean.wasseralarm_gequittiert
+        state: 'off'
       - condition: template
-        value_template: '{{ is_state(''input_boolean.wasseralarm_gequittiert'', ''off'')
-          }}'
-      - condition: template
-        value_template: '{{ is_state(source_sensor, ''on'') }}'
-      - condition: template
-        value_template: '{{ (now().timestamp() - start_ts) < 300 }}'
+        value_template: '{{ leak_sensors | select(''is_state'', ''on'') | list | count > 0 }}'
       sequence:
-      - delay: 00:00:15
-      - data:
-          title: "\U0001F6A8 Wasserleck weiterhin aktiv!"
-          message: 'Bitte prüfen! Quelle: {{ state_attr(source_sensor, ''friendly_name'')
-            or source_sensor }}
-
-            '
+      - action: notify.ha_alarm_phones
+        data:
+          title: "\U0001F6A8 Wasserleck erkannt!"
+          message: >-
+            Nass: {{ leak_sensors | select('is_state', 'on')
+            | map('state_attr', 'friendly_name')
+            | map('regex_replace', '(?i) leckage moisture$', '') | join(', ') }}
+            (seit {{ as_timestamp(start) | timestamp_custom('%H:%M') }})
           data:
+            channel: alarm_stream
             ttl: 0
             priority: high
-            importance: high
-            channel: alarm
-            sound: default
-            vibration: '3000'
+            persistent: true
+            sticky: 'true'
             tag: '{{ alarm_tag }}'
-        action: notify.ha_alarm_phones
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ is_state(''input_boolean.wasseralarm_gequittiert'', ''off'')
-          }}'
-      - condition: template
-        value_template: '{{ is_state(source_sensor, ''on'') }}'
-      - condition: template
-        value_template: '{{ (now().timestamp() - start_ts) >= 300 }}'
-      sequence:
-      - data:
-          title: ⏱️ Wasseralarm automatisch beendet
-          message: 'Alarm wurde nach 5 Minuten automatisch gestoppt. Sensor meldet
-            weiterhin Nass: {{ state_attr(source_sensor, ''friendly_name'') or source_sensor
-            }}
-
-            '
-          data:
-            channel: alarm
-            importance: high
-            priority: high
-            vibration: '150'
-        action: notify.ha_alarm_phones
-      - data:
-          message: clear_notification
-          data:
-            tag: '{{ alarm_tag }}'
-        action: notify.ha_alarm_phones
-      - target:
-          entity_id: input_boolean.wasseralarm_gequittiert
-        action: input_boolean.turn_on
+            actions:
+            - action: ACK_WATER
+              title: Quittieren
+      - delay: 00:01:00
   mode: restart
   variables:
     alarm_tag: wasseralarm
-    source_sensor: '{{ trigger.entity_id }}'
-    start_ts: '{{ now().timestamp() }}'
+    start: '{{ now() }}'
+    leak_sensors:
+    - binary_sensor.waschraum_leckage_water_leak
+    - binary_sensor.kuche_leckage_water_leak
+    - binary_sensor.badezimmer_leckage_water_leak
+    - binary_sensor.hobbyraum_leckage_water_leak
+    - binary_sensor.heizungsraum_leckage_water_leak
+    - binary_sensor.bar_leckage_water_leak
 - id: '1770559676763'
   alias: Wasseralarm – Quittieren (Smartphone)
   description: ''
@@ -380,28 +341,39 @@
   alias: Wasseralarm – Rückkehr zu normal
   description: ''
   triggers:
-  - entity_id:
+  - trigger: state
+    entity_id:
     - binary_sensor.waschraum_leckage_water_leak
     - binary_sensor.kuche_leckage_water_leak
+    - binary_sensor.badezimmer_leckage_water_leak
+    - binary_sensor.hobbyraum_leckage_water_leak
+    - binary_sensor.heizungsraum_leckage_water_leak
+    - binary_sensor.bar_leckage_water_leak
+    from: 'on'
     to: 'off'
-    trigger: state
   conditions:
   - condition: template
-    value_template: "{% set sensors = [\n  'binary_sensor.waschraum_leckage_water_leak',\n
-      \ 'binary_sensor.kuche_leckage_water_leak'\n] %} {{ expand(sensors) | selectattr('state','eq','on')
-      | list | count == 0 }}\n"
+    value_template: '{{ leak_sensors | select(''is_state'', ''on'') | list | count == 0 }}'
   actions:
-  - data:
-      message: clear_notification
+  - action: notify.ha_alarm_phones
+    data:
+      title: ✅ Wasseralarm Entwarnung
+      message: Alle Leckage-Sensoren melden wieder trocken.
       data:
         tag: '{{ alarm_tag }}'
-    action: notify.ha_alarm_phones
   - target:
       entity_id: input_boolean.wasseralarm_gequittiert
     action: input_boolean.turn_off
   mode: single
   variables:
     alarm_tag: wasseralarm
+    leak_sensors:
+    - binary_sensor.waschraum_leckage_water_leak
+    - binary_sensor.kuche_leckage_water_leak
+    - binary_sensor.badezimmer_leckage_water_leak
+    - binary_sensor.hobbyraum_leckage_water_leak
+    - binary_sensor.heizungsraum_leckage_water_leak
+    - binary_sensor.bar_leckage_water_leak
 - id: '1771147657780'
   alias: Warmwasser Zirkulation bei Bewegung
   description: Startet Zirkulationspumpe bei Bewegung, max alle 15 Minuten

@@ -20,7 +20,6 @@ notify:
     name: ha_alarm_phones
     services:
       - service: mobile_app_pixel_9a
-      - service: mobile_app_cph2211
 
   - platform: smtp
     name: email_alerts
