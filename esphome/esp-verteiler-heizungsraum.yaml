@@ -18,6 +18,7 @@ api:
 
 ota:
   - platform: esphome
+    password: !secret esp_verteiler_heizungsraum_ota_password
 
 wifi:
   ssid: !secret wifi_ssid

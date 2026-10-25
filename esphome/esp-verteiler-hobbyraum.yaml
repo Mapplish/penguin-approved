@@ -1,0 +1,204 @@
+esphome:
+  name: esp-verteiler-hobbyraum
+  friendly_name: esp-verteiler-hobbyraum
+
+esp32:
+  variant: esp32
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+  encryption:
+    key: !secret esp_verteiler_hobbyraum_api_key
+
+ota:
+  - platform: esphome
+    password: !secret esp_verteiler_hobbyraum_ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  power_save_mode: none
+  ap:
+    ssid: esp-hobbyraum Fallback
+    password: !secret esp_verteiler_hobbyraum_ap_password
+
+captive_portal:
+
+# Ein 1-Wire-Bus pro Verteiler-Strang
+one_wire:
+  - platform: gpio
+    pin: GPIO17    # EG
+    id: bus_eg
+  - platform: gpio
+    pin: GPIO4     # OG
+    id: bus_og
+  - platform: gpio
+    pin: GPIO16    # UG
+    id: bus_ug
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal Hobbyraum"
+    update_interval: 60s
+
+  # Ruecklauftemperaturen: alle 10 s messen, 1-Minuten-Mittelwert an HA.
+  # Nummerierung = Position am Verteiler, links nach rechts.
+
+  # ---------- EG (GPIO17) ----------
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x1d000000d686a028
+    name: "EG_01 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0xd6000000d64c4c28
+    name: "EG_02 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x73000000d5e9d028
+    name: "EG_03 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x6f000000d6276e28
+    name: "EG_04 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0xe5000000d61ec628
+    name: "EG_05 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x81000000d1f6f328
+    name: "EG_06 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x19000000d265e528
+    name: "EG_07 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x3a000000d6851228
+    name: "EG_08 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_eg
+    address: 0x0c000000d2f8ce28
+    name: "EG_09 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+
+  # ---------- OG (GPIO4) ----------
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0xc3000000d47c4528
+    name: "OG_01 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0x9d000000d3a50528
+    name: "OG_02 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0x08000000d497bb28
+    name: "OG_03 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0x78000000d6a21728
+    name: "OG_04 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0xb2000000d5768128
+    name: "OG_05 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0x54000000d6581628
+    name: "OG_06 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0xf2000000d6335028
+    name: "OG_07 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_og
+    address: 0xc0000000d1db9a28
+    name: "OG_08 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+
+  # ---------- UG (GPIO16) ----------
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0x48000000d4d1a928
+    name: "UG_01 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0xe0000000d6548928
+    name: "UG_02 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0x53000000d6482f28
+    name: "UG_03 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0x92000000d3c2ab28
+    name: "UG_04 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0xd3000000d1e2c728
+    name: "UG_05 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0x31000000d240f628
+    name: "UG_06 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0xb5000000d637d628
+    name: "UG_07 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
+  - platform: dallas_temp
+    one_wire_id: bus_ug
+    address: 0x28000000d5e22328
+    name: "UG_08 Ruecklauf"   # Klarname:
+    update_interval: 10s
+    filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
