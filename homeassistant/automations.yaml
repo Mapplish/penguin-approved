@@ -437,6 +437,7 @@
         Test von: {{ expand('binary_sensor.rauchmelder_test')
         | selectattr('state', 'eq', 'on') | map(attribute='name')
         | map('regex_replace', '(?i) test$', '') | join(', ') }}
+        (gesendet {{ now().strftime('%H:%M:%S') }})
       data:
         channel: alarm_stream
         ttl: 0
