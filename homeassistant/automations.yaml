@@ -425,25 +425,47 @@
   description: >-
     Pressing a detector's test button sends one alarm-stream notification, so
     each detector and the phone can be checked without real smoke.
+    Triggers on the individual test sensors, not on the group: when a
+    detector's test=false report gets lost, its sensor stays on and would
+    keep the group on, swallowing every later press.
   triggers:
   - trigger: state
-    entity_id: binary_sensor.rauchmelder_test
+    entity_id:
+    - binary_sensor.buro_rauchmelder_test
+    - binary_sensor.eingang_rauchmelder_test
+    - binary_sensor.esszimmer_rauchmelder_test
+    - binary_sensor.wohnzimmer_rauchmelder_test
+    - binary_sensor.kaminzimmer_rauchmelder_test
+    - binary_sensor.garage_rauchmelder_test
+    - binary_sensor.obergeschoss_flur_rauchmelder_test
+    - binary_sensor.baby_rauchmelder_test
+    - binary_sensor.schlafzimmer_rauchmelder_test
+    - binary_sensor.kinderzimmer_rauchmelder_test
+    - binary_sensor.gastezimmer_rauchmelder_test
+    - binary_sensor.dachboden_rauchmelder_test
+    - binary_sensor.waschraum_rauchmelder_test
+    - binary_sensor.bar_rauchmelder_test
+    - binary_sensor.hobbyraum_rauchmelder_test
+    - binary_sensor.sportraum_rauchmelder_test
+    - binary_sensor.kuche_hitzemelder_test
+    - binary_sensor.badezimmer_hitzemelder_test
+    - binary_sensor.heizungsraum_hitzemelder_test
+    from: 'off'
     to: 'on'
   actions:
   - action: notify.ha_alarm_phones
     data:
       title: "\U0001F9EA Rauchmelder-Test"
       message: >-
-        Test von: {{ expand('binary_sensor.rauchmelder_test')
-        | selectattr('state', 'eq', 'on') | map(attribute='name')
-        | map('regex_replace', '(?i) test$', '') | join(', ') }}
+        Test von: {{ trigger.to_state.name | regex_replace('(?i) test$', '') }}
         (gesendet {{ now().strftime('%H:%M:%S') }})
       data:
         channel: alarm_stream
         ttl: 0
         priority: high
-        tag: rauchalarm_test
-  mode: single
+        tag: rauchalarm_test_{{ trigger.entity_id }}
+  mode: queued
+  max: 20
 - id: '1771147657780'
   alias: Warmwasser Zirkulation bei Bewegung
   description: Startet Zirkulationspumpe bei Bewegung, max alle 15 Minuten
