@@ -69,7 +69,7 @@ sensor:
   - platform: dallas_temp
     one_wire_id: bus_eg
     address: 0x6f000000d6276e28
-    name: "EG_04 Ruecklauf"   # Klarname:
+    name: "EG_04 Ruecklauf"   # Klarname: Gaeste-WC (Stellantrieb zu, bestaetigt 2026-10-27)
     update_interval: 10s
     filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
   - platform: dallas_temp
@@ -99,7 +99,7 @@ sensor:
   - platform: dallas_temp
     one_wire_id: bus_eg
     address: 0x0c000000d2f8ce28
-    name: "EG_09 Ruecklauf"   # Klarname:
+    name: "EG_09 Ruecklauf"   # Klarname: Buero (vermutet, aus Daten: staerkste/schnellste Reaktion)
     update_interval: 10s
     filters: [{sliding_window_moving_average: {window_size: 6, send_every: 6}}]
 
