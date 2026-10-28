@@ -17,27 +17,62 @@ stehen zusätzlich als `# Klarname:`-Kommentar in
   Stellantrieb verschiebt die Werte der anderen Kreise.
 - Mitnotieren, welche Stellantriebe gerade zu sind.
 
+## Erste Ablesung 2026-10-28
+
+Durchflussmesser am Verteiler. Ein Wert von 0 bedeutet: die
+Rücklaufverschraubung ist zu. Das wurde irgendwann bewusst so eingestellt und
+ist der Ausgangspunkt für den Abgleich.
+
+| Strang | Kreise | offen | Summe (l/min) |
+|---|---|---|---|
+| EG | 9 | 6 | 9,2 |
+| OG | 8 | 5 | 8,0 |
+| UG | 8 | 7 | 3,8 |
+| **Gesamt** | 25 | 18 | **≈ 21 (≈ 1,25 m³/h)** |
+
 ## EG
 
 | Kreis | Raum | Durchfluss (l/min) | Stellantrieb | Stand | Notiz |
 |---|---|---|---|---|---|
-| EG_01 | ? | | | | |
-| EG_02 | ? | | | | |
-| EG_03 | ? | | | | |
-| EG_04 | Gäste-WC | | zu | 2026-10-27 | Raum hält trotzdem 20,5–21 °C (Nachbarräume heizen mit) |
-| EG_05 | ? | | | | |
-| EG_06 | ? | | | | |
-| EG_07 | ? | | | | |
-| EG_08 | ? | | | | |
-| EG_09 | Büro (vermutet) | | auf | 2026-10-27 | Stärkste/schnellste Reaktion aller EG-Kreise; Büro soll bewusst schnell warm werden — beim Abgleich nicht ungefragt drosseln |
+| EG_01 | ? | 1 |  | 2026-10-28 |  |
+| EG_02 | ? | 1,6 |  | 2026-10-28 |  |
+| EG_03 | ? | 1,6 |  | 2026-10-28 |  |
+| EG_04 | Gäste-WC | 0 | zu | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). Raum hält trotzdem 20,5–21 °C (Nachbarräume heizen mit) |
+| EG_05 | ? | 1,5 |  | 2026-10-28 |  |
+| EG_06 | ? | 1 |  | 2026-10-28 |  |
+| EG_07 | ? | 0 |  | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). Rücklaufsensor reagiert trotzdem auf Heizläufe (+0,8 K) → Wärme von außen, nicht Durchfluss |
+| EG_08 | ? | 0 |  | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). Rücklaufsensor reagiert trotzdem leicht (+0,5 K) → Wärme von außen, nicht Durchfluss |
+| EG_09 | Büro (vermutet) | 2,5 | auf | 2026-10-28 | Stärkste/schnellste Reaktion aller EG-Kreise; Büro soll bewusst schnell warm werden — beim Abgleich nicht ungefragt drosseln |
 
 ## OG
 
-Sensoren konfiguriert, noch nicht verdrahtet.
+Rücklaufsensoren konfiguriert, noch nicht verdrahtet.
+
+| Kreis | Raum | Durchfluss (l/min) | Stellantrieb | Stand | Notiz |
+|---|---|---|---|---|---|
+| OG_01 | ? | 0 |  | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). |
+| OG_02 | ? | 2,5 |  | 2026-10-28 |  |
+| OG_03 | ? | 0,5 |  | 2026-10-28 |  |
+| OG_04 | ? | 2,5 |  | 2026-10-28 |  |
+| OG_05 | ? | 0,5 |  | 2026-10-28 |  |
+| OG_06 | ? | 0 |  | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). |
+| OG_07 | ? | 0 |  | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). |
+| OG_08 | ? | 2 |  | 2026-10-28 |  |
 
 ## UG
 
-Sensoren konfiguriert, noch nicht verdrahtet.
+Rücklaufsensoren konfiguriert, noch nicht verdrahtet.
+
+| Kreis | Raum | Durchfluss (l/min) | Stellantrieb | Stand | Notiz |
+|---|---|---|---|---|---|
+| UG_01 | ? | 0,5 |  | 2026-10-28 |  |
+| UG_02 | ? | 0,5 |  | 2026-10-28 |  |
+| UG_03 | ? | 0,6 |  | 2026-10-28 |  |
+| UG_04 | ? | 0,6 |  | 2026-10-28 |  |
+| UG_05 | ? | 0 |  | 2026-10-28 | Rücklaufventil zu (bewusst so eingestellt). |
+| UG_06 | ? | 0,5 |  | 2026-10-28 |  |
+| UG_07 | ? | 0,5 |  | 2026-10-28 |  |
+| UG_08 | ? | 0,6 |  | 2026-10-28 |  |
 
 ## Beobachtungen aus den Rücklaufsensoren
 
