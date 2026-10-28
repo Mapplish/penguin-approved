@@ -74,6 +74,17 @@ Rücklaufsensoren konfiguriert, noch nicht verdrahtet.
 | UG_07 | ? | 0,5 |  | 2026-10-28 |  |
 | UG_08 | ? | 0,6 |  | 2026-10-28 |  |
 
+## Kaminraum (separate Altkreise)
+
+Zwei ältere Kreise für den Kaminraum, nicht an den drei Verteilern oben und
+ohne Durchflussmesser. Sie lassen sich nur per Drehventil einstellen, der
+Durchfluss ist nicht messbar. Hydraulisch liegen sie am nächsten an der
+Wärmepumpe und bekommen deshalb immer als erste warmes Wasser. Beim Abgleich
+heißt das: Sie werden vermutlich bevorzugt und überversorgt und können den
+übrigen Kreisen Durchfluss wegnehmen. Bewerten lassen sie sich nur indirekt,
+über die Raumtemperatur im Kaminraum bzw. die Summe aller Durchflüsse im
+Vergleich zum WP-Volumenstrom.
+
 ## Beobachtungen aus den Rücklaufsensoren
 
 Auswertung 2026-10-24 → 2026-10-27 (EG, Außentemperatur 10,5–13 °C):
