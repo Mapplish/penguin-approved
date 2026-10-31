@@ -134,6 +134,44 @@ Options: `auto`, `ventilation`, `party`, `veto`, `onedayaway`,
 suspected mapping to the manual's Party/Lüften/1 Tag weg/1 Tag daheim/Laden
 menu items, but not yet confirmed against the physical sensoCOMFORT display.
 
+### HP volume flow: `hmu BuildingCircuitFlow`
+
+Exists in the ebusd hmu config but is not polled by default (`find` shows
+"no data stored"). A forced read (`read -f -c hmu BuildingCircuitFlow`)
+returns raw `ff07` = **2047 l/h**, constant across repeated reads while
+heating (2026-10-31, building pump `RunDataBuildingCPumpPower` = 50 %).
+2047 = 0x7FF looks like a placeholder, but the installer live monitor on the
+display shows the same **2047 l/h** — confirmed as the value the HP itself
+uses. (Energy balance from `CurrentYieldPower` 4.2 kW and the 2.5 K spread
+gives ~1450 l/h, but the spread only has 0.5 K resolution and the yield is
+the HP's own estimate, so that check is weak.) `hmu FlowPressure` has no data.
+
+Hydraulic context: per the installer's schematic (Systemschema 8) the MPS 40
+buffer is a 4-port separator between the HP circuit and the heating pump R1,
+so `status01_temp_1` is the HP-side return *after* the buffer, not the
+heating circuits' return (not yet verified on site).
+
+Getting it into HA is still open: an MQTT publish of `?3` to
+`ebusd/hmu/BuildingCircuitFlow/get` (meant to set poll priority 3) did not
+create an HA entity within 10 min.
+
+### Lifetime energy counters (read 2026-10-31, HP installed winter 2023)
+
+| Register | Value | Meaning |
+|---|---|---|
+| `hmu TotalEnergyUsage` | 33 047 kWh | electrical consumption, lifetime |
+| `ctlv2 PrEnergySumHc` / `PrEnergySumHwc` | 27 400 / 7 109 kWh | electrical, heating / hot water (sum ≈ TotalEnergyUsage) |
+| `ctlv2 YieldTotal` | 80 050 kWh | heat delivered, lifetime |
+| `ctlv2 PrEnergySumHcThisMonth` | 306 kWh | electrical heating, October |
+| `hmu YieldHcMonth` / `YieldHwcMonth` | 1442.2 / 176.2 kWh | heat, October |
+| `hmu YieldHc` / `YieldHwc` | 4 492 / 10 094 | do **not** match YieldTotal — meaning unclear |
+| `ctlv2 Hc1HeatCurve` | 0.4 | heating curve HC1 (`AdaptHeatCurve` = no) |
+
+Lifetime COP ≈ 80 050 / 33 047 ≈ 2.4, but October heating alone ≈ 1442 / 306
+≈ 4.7. The lifetime figure likely includes poorly tuned early operation
+(optimization started 2024) and possibly backup heater energy. Not yet
+verified against the display.
+
 ## Open verification items (unconfirmed against the physical display)
 
 These dashboard labels are marked "(ungeprüft)" in
