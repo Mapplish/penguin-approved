@@ -642,3 +642,42 @@
           </table>
           </body></html>
   mode: single
+- id: 'ebusd_restart_when_polled_entities_stale'
+  alias: ebusd neu starten wenn WP-Sensoren haengen
+  description: >-
+    After an HA restart (seen 2026-11-04) the polled ebusd entities (hmu
+    power, runstats, ctlv2) stayed unavailable for days although ebusd still
+    had the values. Restarting the ebusd add-on republishes them. Guarded by
+    the unavailable check, so a healthy start does nothing; a state trigger
+    only fires on a change, so a really dead ebusd is not restarted in a loop.
+  triggers:
+  - trigger: homeassistant
+    event: start
+    id: ha_start
+  - trigger: state
+    entity_id: sensor.heating_ebusd_hmu_currentconsumedpower
+    to: unavailable
+    for:
+      minutes: 15
+    id: stale
+  conditions: []
+  actions:
+  - if:
+    - condition: trigger
+      id: ha_start
+    then:
+    - delay:
+        minutes: 10
+  - condition: state
+    entity_id: sensor.heating_ebusd_hmu_currentconsumedpower
+    state: unavailable
+  - action: hassio.app_restart
+    data:
+      app: b4d7ad18_ebusd
+  - action: persistent_notification.create
+    data:
+      title: ebusd neu gestartet
+      message: >-
+        WP-Sensoren waren nicht verfuegbar (Ausloeser: {{ trigger.id }}),
+        ebusd-Add-on wurde automatisch neu gestartet.
+  mode: single

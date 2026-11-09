@@ -144,7 +144,15 @@ heating (2026-10-31, building pump `RunDataBuildingCPumpPower` = 50 %).
 display shows the same **2047 l/h** — confirmed as the value the HP itself
 uses. (Energy balance from `CurrentYieldPower` 4.2 kW and the 2.5 K spread
 gives ~1450 l/h, but the spread only has 0.5 K resolution and the yield is
-the HP's own estimate, so that check is weak.) `hmu FlowPressure` has no data.
+the HP's own estimate, so that check is weak.) `hmu FlowPressure` had no
+data on 2026-10-31.
+
+Re-read 2026-11-09 (outdoor ~6 °C, compressor running, pump still 50 %):
+**2086 l/h**, stable over 5 reads in 50 s. A value other than 2047 rules out
+the 0x7FF-placeholder theory, so this is a real measurement. `hmu FlowPressure`
+now answers too: 1.52 bar. HA history 10-17..11-04 for
+`rundatabuildingcpumppower`: always 50 % while heating (`pumpstate` on),
+100 % during hot water (`hwc`), so the pump has no outdoor-dependent modulation.
 
 Hydraulic context: per the installer's schematic (Systemschema 8) the MPS 40
 buffer is a 4-port separator between the HP circuit and the heating pump R1,
