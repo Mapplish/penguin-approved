@@ -19,6 +19,9 @@ Langfristige Ziele (siehe docs/ARCHITECTURE.md, docs/ROADMAP.md):
 - `homeassistant/` – alles andere HA-Config: automations.yaml, scripts.yaml, 
   scenes.yaml, integrations/, dashboards/ (per !include aus configuration.yaml 
   eingebunden, Pfade sind frei wählbar)
+- `homeassistant/packages/` – HA-Packages, eine Datei pro Feature
+  (z.B. `abgleich.yaml` = Abgleich-Auswertung, siehe `docs/ABGLEICH.md`),
+  per `homeassistant: packages: !include_dir_named` eingebunden
 - `ebusd/`, `esphome/`, `hardware/`, `experiments/`, `docs/`, `scripts/` – 
   weitere Projektbereiche, aktuell größtenteils noch leer/in Planung
 

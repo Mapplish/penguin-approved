@@ -1,0 +1,380 @@
+# Hydraulic/thermal balancing: evaluation per step + daily night report.
+#
+# Read-only by design (user rule): nothing here controls the heating, it
+# only collects numbers and mails them. Every valve change is made by hand.
+#
+# Workflow:
+#   1. Change ONE thing at the distributor, set "Abgleich Schritt" (what
+#      was changed) and "Abgleich Zielraum", press "Abgleich Schritt
+#      gestartet". This snapshots the last 48 h as the "before" values.
+#   2. 48 h later the step mail compares the next 48 h against them and
+#      gives a verdict (bestaetigt / beobachten / zuruecknehmen).
+#   3. Every morning at 07:00 a short mail with the 03-05 h night values.
+#
+# Thresholds and their origin: docs/ABGLEICH.md. The statistics sensors
+# (sensor.abgleich_<key>_48h/_nacht/...) live in abgleich_statistik.yaml.
+
+input_button:
+  abgleich_schritt_gestartet:
+    name: Abgleich Schritt gestartet
+    icon: mdi:flag-checkered
+  abgleich_bewertung_jetzt:
+    name: Abgleich Bewertung jetzt senden
+    icon: mdi:email-fast-outline
+  abgleich_tagesbericht_jetzt:
+    name: Abgleich Tagesbericht jetzt senden
+    icon: mdi:email-outline
+
+input_text:
+  abgleich_schritt:
+    name: Abgleich Schritt
+    max: 255
+    initial: "Stand 0"
+    icon: mdi:pencil
+
+input_select:
+  abgleich_zielraum:
+    name: Abgleich Zielraum
+    icon: mdi:target
+    options:
+      - Alle Räume
+      - Schlafzimmer
+      - Büro/Gäste
+      - Zimmer Weiß
+      - Kinderzimmer Velux
+      - Flur OG
+      - Bad
+      - Wohnzimmer
+      - Esszimmer
+      - WC EG
+      - Küche
+      - Eingang
+      - Büro
+      - Kaminzimmer
+      - Hobbyraum
+      - Waschküche
+      - Bar
+      - Sauna
+
+template:
+  - sensor:
+      # Single source of truth for rooms and target bands (lo/hi in °C).
+      # k = key of the statistics sensors, n = display name (must match the
+      # input_select options), e = floor, p = proxy (smoke detector at the
+      # ceiling, reads high). Targets: user's working document 2026-11-22.
+      - name: "Abgleich Raeume"
+        unique_id: abgleich_raeume
+        icon: mdi:floor-plan
+        state: "17"
+        attributes:
+          rooms: >
+            {{ [
+              {'k':'schlafzimmer','n':'Schlafzimmer','e':'OG','lo':17,'hi':18,'p':false},
+              {'k':'buero_gaeste','n':'Büro/Gäste','e':'OG','lo':20,'hi':21,'p':true},
+              {'k':'zimmer_weiss','n':'Zimmer Weiß','e':'OG','lo':20,'hi':21,'p':true},
+              {'k':'kinderzimmer','n':'Kinderzimmer Velux','e':'OG','lo':20,'hi':22,'p':false},
+              {'k':'flur_og','n':'Flur OG','e':'OG','lo':17,'hi':19,'p':true},
+              {'k':'bad','n':'Bad','e':'OG','lo':21,'hi':22,'p':false},
+              {'k':'wohnzimmer','n':'Wohnzimmer','e':'EG','lo':20,'hi':21,'p':false},
+              {'k':'esszimmer','n':'Esszimmer','e':'EG','lo':20,'hi':21,'p':false},
+              {'k':'wc_eg','n':'WC EG','e':'EG','lo':20,'hi':21,'p':false},
+              {'k':'kueche','n':'Küche','e':'EG','lo':20,'hi':21,'p':false},
+              {'k':'eingang','n':'Eingang','e':'EG','lo':20,'hi':21,'p':false},
+              {'k':'buero','n':'Büro','e':'EG','lo':20.5,'hi':21.5,'p':false},
+              {'k':'kaminzimmer','n':'Kaminzimmer','e':'EG','lo':20,'hi':21,'p':true},
+              {'k':'hobby','n':'Hobbyraum','e':'UG','lo':17.5,'hi':18.5,'p':true},
+              {'k':'waschkueche','n':'Waschküche','e':'UG','lo':17.5,'hi':18.5,'p':true},
+              {'k':'bar','n':'Bar','e':'UG','lo':17.5,'hi':18.5,'p':false},
+              {'k':'sauna','n':'Sauna','e':'UG','lo':17.5,'hi':18.5,'p':true}
+            ] }}
+          ohne_sensor: "{{ ['Vorrat (UG)', 'Diele (UG)', 'WC/Dusche (UG)'] }}"
+
+      # Current rolling 48 h values as one dict, so the step snapshot and the
+      # evaluation share exactly one definition. Excluded from the recorder
+      # (configuration.yaml): the attribute changes with every sample.
+      - name: "Abgleich Aktuell 48h"
+        unique_id: abgleich_aktuell_48h
+        icon: mdi:chart-box-outline
+        # state = number of rooms that currently have a 48 h value
+        state: >
+          {%- set ns = namespace(n=0) -%}
+          {%- for r in state_attr('sensor.abgleich_raeume', 'rooms') or [] -%}
+            {%- if is_number(states('sensor.abgleich_' ~ r.k ~ '_48h')) %}{% set ns.n = ns.n + 1 %}{% endif -%}
+          {%- endfor -%}
+          {{ ns.n }}
+        attributes:
+          werte: >
+            {%- set ns = namespace(p=[]) -%}
+            {%- for r in state_attr('sensor.abgleich_raeume', 'rooms') or [] -%}
+              {%- set v = states('sensor.abgleich_' ~ r.k ~ '_48h') -%}
+              {%- set ns.p = ns.p + [[r.k, (v | float) if is_number(v) else none]] -%}
+            {%- endfor -%}
+            {{ {
+              'raeume': dict(ns.p),
+              'sz_min': states('sensor.abgleich_schlafzimmer_min_48h') | float(none),
+              'sz_rh_max': states('sensor.abgleich_schlafzimmer_feuchte_max_48h') | float(none),
+              'aussen': states('sensor.abgleich_aussen_48h') | float(none),
+              'spreizung': states('sensor.abgleich_spreizung_48h') | float(none),
+              'starts': states('sensor.abgleich_starts_48h') | float(0),
+              'stunden': states('sensor.abgleich_kompressorstunden_48h') | float(0),
+              'strom': states('sensor.abgleich_strom_heizen_48h') | float(0),
+              'ertrag': states('sensor.abgleich_ertrag_heizen_48h') | float(0)
+            } }}
+
+      - name: "Abgleich Bewertung faellig"
+        unique_id: abgleich_bewertung_faellig
+        device_class: timestamp
+        icon: mdi:calendar-clock
+        availability: "{{ as_datetime(states('sensor.abgleich_ausgangswerte'), none) is not none }}"
+        state: "{{ (as_datetime(states('sensor.abgleich_ausgangswerte')) + timedelta(hours=48)).isoformat() }}"
+
+  # "Before" snapshot, taken when the step button is pressed.
+  - triggers:
+      - trigger: state
+        entity_id: input_button.abgleich_schritt_gestartet
+        not_from: [unavailable, unknown]
+        not_to: [unavailable, unknown]
+    sensor:
+      - name: "Abgleich Ausgangswerte"
+        unique_id: abgleich_ausgangswerte
+        device_class: timestamp
+        icon: mdi:flag-checkered
+        state: "{{ now().isoformat() }}"
+        attributes:
+          werte: "{{ state_attr('sensor.abgleich_aktuell_48h', 'werte') }}"
+          schritt: "{{ states('input_text.abgleich_schritt') }}"
+          zielraum: "{{ states('input_select.abgleich_zielraum') }}"
+
+  # Night values 03-05 h: the _nacht statistics have a 2 h window, so at
+  # 05:00 they hold exactly that interval.
+  - triggers:
+      - trigger: time
+        at: "05:00:00"
+    sensor:
+      - name: "Abgleich Nachtwerte"
+        unique_id: abgleich_nachtwerte
+        device_class: timestamp
+        icon: mdi:weather-night
+        state: "{{ now().isoformat() }}"
+        attributes:
+          werte: >
+            {%- set ns = namespace(p=[]) -%}
+            {%- for r in state_attr('sensor.abgleich_raeume', 'rooms') or [] -%}
+              {%- set v = states('sensor.abgleich_' ~ r.k ~ '_nacht') -%}
+              {%- set ns.p = ns.p + [[r.k, (v | float) if is_number(v) else none]] -%}
+            {%- endfor -%}
+            {{ {
+              'raeume': dict(ns.p),
+              'sz_min': states('sensor.abgleich_schlafzimmer_min_nacht') | float(none),
+              'sz_rh_max': states('sensor.abgleich_schlafzimmer_feuchte_max_nacht') | float(none),
+              'aussen': states('sensor.abgleich_aussen_nacht') | float(none)
+            } }}
+
+automation:
+  - id: abgleich_schritt_bewertung
+    alias: Abgleich – Schritt bewerten (48 h)
+    description: >-
+      Compares the 48 h after a balancing step with the 48 h before it and
+      mails a table plus verdict. Rules and thresholds: docs/ABGLEICH.md.
+    triggers:
+      - trigger: time
+        at: sensor.abgleich_bewertung_faellig
+      - trigger: state
+        entity_id: input_button.abgleich_bewertung_jetzt
+        not_from: [unavailable, unknown]
+        not_to: [unavailable, unknown]
+    actions:
+      - variables:
+          rooms: "{{ state_attr('sensor.abgleich_raeume', 'rooms') or [] }}"
+          vor: "{{ state_attr('sensor.abgleich_ausgangswerte', 'werte') or {} }}"
+          nach: "{{ state_attr('sensor.abgleich_aktuell_48h', 'werte') or {} }}"
+          schritt: "{{ state_attr('sensor.abgleich_ausgangswerte', 'schritt') or '–' }}"
+          zielraum: "{{ state_attr('sensor.abgleich_ausgangswerte', 'zielraum') or 'Alle Räume' }}"
+          seit: >
+            {% set t = as_datetime(states('sensor.abgleich_ausgangswerte'), none) %}
+            {{ as_local(t).strftime('%d.%m. %H:%M') if t else '' }}
+          ergebnis: >
+            {%- set vr = vor.raeume if vor and vor.raeume is defined else {} -%}
+            {%- set nr = nach.raeume if nach and nach.raeume is defined else {} -%}
+            {%- set ns = namespace(rows=[], fail=[], warn=[], zr='grau', rot=0, gelb=0) -%}
+            {%- for r in rooms -%}
+              {%- set v = nr[r.k] if r.k in nr else none -%}
+              {%- set b = vr[r.k] if r.k in vr else none -%}
+              {%- if v is number -%}
+                {%- set d = (r.lo - v) if v < r.lo else ((v - r.hi) if v > r.hi else 0) -%}
+                {%- set a = 'gruen' if d == 0 else ('gelb' if d <= 1 else 'rot') -%}
+              {%- else -%}
+                {%- set a = 'grau' -%}
+              {%- endif -%}
+              {%- if a == 'rot' %}{% set ns.rot = ns.rot + 1 %}{% endif -%}
+              {%- if a == 'gelb' %}{% set ns.gelb = ns.gelb + 1 %}{% endif -%}
+              {%- if r.n == zielraum %}{% set ns.zr = a %}{% endif -%}
+              {%- set ns.rows = ns.rows + [dict(r, v=v, b=b, a=a)] -%}
+            {%- endfor -%}
+            {%- if zielraum == 'Alle Räume' -%}
+              {%- set ns.zr = 'rot' if ns.rot > 0 else ('gelb' if ns.gelb > 0 else 'gruen') -%}
+            {%- endif -%}
+            {%- if ns.zr == 'rot' %}{% set ns.fail = ns.fail + ['Zielraum (' ~ zielraum ~ ') mehr als 1 K neben dem Zielbereich'] %}{% endif -%}
+            {%- if ns.zr == 'gelb' %}{% set ns.warn = ns.warn + ['Zielraum (' ~ zielraum ~ ') knapp neben dem Zielbereich'] %}{% endif -%}
+            {%- if ns.zr == 'grau' %}{% set ns.warn = ns.warn + ['Zielraum (' ~ zielraum ~ ') ohne Messwert'] %}{% endif -%}
+            {#- Spread: distance to the 4-7 K target band must not grow by more than 0.3 K -#}
+            {%- set sv = vor.spreizung if vor and vor.spreizung is number else none -%}
+            {%- set sn = nach.spreizung if nach.spreizung is number else none -%}
+            {%- if sv is number and sn is number -%}
+              {%- set dv = [4 - sv, 0, sv - 7] | max -%}
+              {%- set dn = [4 - sn, 0, sn - 7] | max -%}
+              {%- if dn > dv + 0.3 %}{% set ns.fail = ns.fail + ['Spreizung weiter vom Ziel 4–7 K entfernt'] %}{% endif -%}
+            {%- endif -%}
+            {#- Starts per day must not rise by more than max(1, 10 %) -#}
+            {%- set stv = (vor.starts / 2) if vor else none -%}
+            {%- set stn = nach.starts / 2 -%}
+            {%- if stv is number and stn > stv + ([1, stv * 0.1] | max) -%}
+              {%- set ns.fail = ns.fail + ['Mehr Verdichterstarts pro Tag'] -%}
+            {%- endif -%}
+            {%- set lz = (nach.stunden / nach.starts * 60) if nach.starts > 0 else none -%}
+            {%- if lz is number and lz < 10 %}{% set ns.warn = ns.warn + ['Laufzeit pro Start unter 10 min'] %}{% endif -%}
+            {%- if nach.sz_min is number and nach.sz_min < 16 %}{% set ns.fail = ns.fail + ['Schlafzimmer unter 16 °C'] %}{% endif -%}
+            {%- if nach.sz_rh_max is number and nach.sz_rh_max >= 60 %}{% set ns.fail = ns.fail + ['Schlafzimmer-Feuchte 60 % oder mehr'] %}{% endif -%}
+            {%- if vor and vor.aussen is number and nach.aussen is number and (nach.aussen - vor.aussen) | abs > 2 -%}
+              {%- set ns.warn = ns.warn + ['Außentemperatur weicht um mehr als 2 K ab, Vergleich unsicher'] -%}
+            {%- endif -%}
+            {%- set spannen = namespace(t=[]) -%}
+            {%- for e in ['EG', 'UG'] -%}
+              {%- set vals = ns.rows | selectattr('e', 'eq', e) | map(attribute='v') | select('number') | list -%}
+              {%- if vals | count > 1 %}{% set spannen.t = spannen.t + [[e, (vals | max) - (vals | min)]] %}{% endif -%}
+            {%- endfor -%}
+            {%- set fazit = 'kein Ausgangswert' if not vor else ('zurücknehmen' if ns.fail else ('beobachten' if ns.warn else 'bestätigt')) -%}
+            {{ {'rows': ns.rows, 'fail': ns.fail, 'warn': ns.warn, 'fazit': fazit,
+                'stv': stv, 'stn': stn, 'lz': lz, 'spannen': dict(spannen.t)} }}
+      - action: notify.email_alerts
+        data:
+          title: "Abgleich: {{ schritt }} – {{ ergebnis.fazit }}"
+          message: >-
+            Schritt: {{ schritt }} (seit {{ seit }}), Zielraum: {{ zielraum }}.
+            Fazit: {{ ergebnis.fazit }}.
+            {% for f in ergebnis.fail %} Problem: {{ f }}.{% endfor %}
+            {% for w in ergebnis.warn %} Hinweis: {{ w }}.{% endfor %}
+          data:
+            html: >
+              {%- macro f1(x, u='') -%}{{ (x | round(1) | string | replace('.', ',') ~ u) if x is number else '–' }}{%- endmacro -%}
+              {%- macro lzf(m) -%}{{ ('–' if m is not number else ((m / 60) | round(1) | string | replace('.', ',') ~ ' h' if m >= 120 else (m | round(0) | int) ~ ' min')) }}{%- endmacro -%}
+              {%- macro dot(a) -%}{%- set c = {'gruen':'#2e7d32','gelb':'#f9a825','rot':'#c62828','grau':'#9e9e9e'}[a] -%}<span style="color:{{ c }};font-size:16px;">&#9679;</span>{%- endmacro -%}
+              {%- set fc = {'bestätigt':'#2e7d32','beobachten':'#f9a825','zurücknehmen':'#c62828'}.get(ergebnis.fazit, '#757575') -%}
+              {%- set td = 'padding:5px 8px;border-bottom:1px solid #ddd;' -%}
+              {%- set th = 'padding:5px 8px;border-bottom:2px solid #333;text-align:left;' -%}
+              <!DOCTYPE html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;">
+              <h2 style="margin:0 0 4px 0;">Abgleich: {{ schritt }}</h2>
+              <p style="margin:0 0 12px 0;color:#555;">Schritt seit {{ seit }} · Zielraum: {{ zielraum }} · Vergleich 48 h vorher / 48 h nachher (Median)</p>
+              <p style="font-size:18px;margin:0 0 12px 0;">Fazit: <b style="color:{{ fc }};">{{ ergebnis.fazit }}</b></p>
+              {%- if ergebnis.fail or ergebnis.warn %}
+              <ul style="margin:0 0 12px 0;padding-left:20px;">
+              {%- for f in ergebnis.fail %}<li style="color:#c62828;">{{ f }}</li>{% endfor -%}
+              {%- for w in ergebnis.warn %}<li style="color:#8d6e00;">{{ w }}</li>{% endfor -%}
+              </ul>
+              {%- endif %}
+              <table style="border-collapse:collapse;width:100%;max-width:560px;">
+              <tr><th style="{{ th }}">Raum</th><th style="{{ th }}">Ziel</th><th style="{{ th }}text-align:right;">vorher</th><th style="{{ th }}text-align:right;">nachher</th><th style="{{ th }}"></th></tr>
+              {%- for r in ergebnis.rows %}
+              <tr{% if r.n == zielraum %} style="background:#f3f6fb;"{% endif %}>
+                <td style="{{ td }}">{{ r.e }} · {{ r.n }}{% if r.p %} <span style="color:#888;">(Rauchmelder)</span>{% endif %}</td>
+                <td style="{{ td }}color:#555;">{{ f1(r.lo) }}–{{ f1(r.hi) }}</td>
+                <td style="{{ td }}text-align:right;color:#555;">{{ f1(r.b) }}</td>
+                <td style="{{ td }}text-align:right;font-weight:bold;">{{ f1(r.v) }}</td>
+                <td style="{{ td }}">{{ dot(r.a) }}</td>
+              </tr>
+              {%- endfor %}
+              </table>
+              <p style="margin:6px 0 16px 0;color:#888;font-size:12px;">Ohne Raumsensor: {{ (state_attr('sensor.abgleich_raeume', 'ohne_sensor') or []) | join(', ') }}. Rauchmelder hängen an der Decke und zeigen eher zu viel.
+              {%- for e, s in ergebnis.spannen.items() %} Spanne {{ e }}: {{ f1(s, ' K') }}.{% endfor %}</p>
+              <table style="border-collapse:collapse;width:100%;max-width:560px;">
+              <tr><th style="{{ th }}">Wärmepumpe</th><th style="{{ th }}text-align:right;">vorher</th><th style="{{ th }}text-align:right;">nachher</th></tr>
+              <tr><td style="{{ td }}">Außentemperatur (Mittel)</td><td style="{{ td }}text-align:right;">{{ f1(vor.aussen if vor else none, ' °C') }}</td><td style="{{ td }}text-align:right;">{{ f1(nach.aussen, ' °C') }}</td></tr>
+              <tr><td style="{{ td }}">Spreizung (Ziel 4–7 K)</td><td style="{{ td }}text-align:right;">{{ f1(vor.spreizung if vor else none, ' K') }}</td><td style="{{ td }}text-align:right;">{{ f1(nach.spreizung, ' K') }}</td></tr>
+              <tr><td style="{{ td }}">Verdichterstarts pro Tag</td><td style="{{ td }}text-align:right;">{{ f1(ergebnis.stv) }}</td><td style="{{ td }}text-align:right;">{{ f1(ergebnis.stn) }}</td></tr>
+              <tr><td style="{{ td }}">Laufzeit pro Start</td><td style="{{ td }}text-align:right;">{{ lzf((vor.stunden / vor.starts * 60) if vor and vor.starts > 0 else none) }}</td><td style="{{ td }}text-align:right;">{{ lzf(ergebnis.lz) }}</td></tr>
+              <tr><td style="{{ td }}">COP Heizen</td><td style="{{ td }}text-align:right;">{{ f1((vor.ertrag / vor.strom) if vor and vor.strom > 0 else none) }}</td><td style="{{ td }}text-align:right;">{{ f1((nach.ertrag / nach.strom) if nach.strom > 0 else none) }}</td></tr>
+              <tr><td style="{{ td }}">Schlafzimmer Minimum (≥ 16 °C)</td><td style="{{ td }}text-align:right;">{{ f1(vor.sz_min if vor else none, ' °C') }}</td><td style="{{ td }}text-align:right;">{{ f1(nach.sz_min, ' °C') }}</td></tr>
+              <tr><td style="{{ td }}">Schlafzimmer Feuchte max. (&lt; 60 %)</td><td style="{{ td }}text-align:right;">{{ f1(vor.sz_rh_max if vor else none, ' %') }}</td><td style="{{ td }}text-align:right;">{{ f1(nach.sz_rh_max, ' %') }}</td></tr>
+              </table>
+              <p style="margin:12px 0 0 0;color:#888;font-size:12px;">Ampel: grün im Zielbereich, gelb bis 1 K daneben, rot mehr als 1 K daneben. Regeln: docs/ABGLEICH.md. Nur Empfehlung – geändert wird ausschließlich von Hand.</p>
+              </body></html>
+    mode: single
+
+  - id: abgleich_tagesbericht
+    alias: Abgleich – Tagesbericht (Nachtwerte)
+    description: >-
+      Daily 07:00 mail with the 03-05 h night medians per room (snapshot at
+      05:00) and the heat pump's last 24 h.
+    triggers:
+      - trigger: time
+        at: "07:00:00"
+      - trigger: state
+        entity_id: input_button.abgleich_tagesbericht_jetzt
+        not_from: [unavailable, unknown]
+        not_to: [unavailable, unknown]
+    actions:
+      - variables:
+          rooms: "{{ state_attr('sensor.abgleich_raeume', 'rooms') or [] }}"
+          nacht: "{{ state_attr('sensor.abgleich_nachtwerte', 'werte') or {} }}"
+          nacht_von: >
+            {% set t = as_datetime(states('sensor.abgleich_nachtwerte'), none) %}
+            {{ as_local(t).strftime('%d.%m.') if t else '' }}
+          rows: >
+            {%- set nr = nacht.raeume if nacht and nacht.raeume is defined else {} -%}
+            {%- set ns = namespace(rows=[]) -%}
+            {%- for r in rooms -%}
+              {%- set v = nr[r.k] if r.k in nr else none -%}
+              {%- if v is number -%}
+                {%- set d = (r.lo - v) if v < r.lo else ((v - r.hi) if v > r.hi else 0) -%}
+                {%- set a = 'gruen' if d == 0 else ('gelb' if d <= 1 else 'rot') -%}
+              {%- else -%}{%- set a = 'grau' -%}{%- endif -%}
+              {%- set ns.rows = ns.rows + [dict(r, v=v, a=a)] -%}
+            {%- endfor -%}
+            {{ ns.rows }}
+          starts: "{{ states('sensor.abgleich_starts_24h') | float(0) }}"
+          stunden: "{{ states('sensor.abgleich_kompressorstunden_24h') | float(0) }}"
+          strom: "{{ states('sensor.abgleich_strom_heizen_24h') | float(0) }}"
+          ertrag: "{{ states('sensor.abgleich_ertrag_heizen_24h') | float(0) }}"
+          schritt_info: >
+            {% set t = as_datetime(states('sensor.abgleich_ausgangswerte'), none) %}
+            {% if t %}{{ state_attr('sensor.abgleich_ausgangswerte', 'schritt') }} seit {{ as_local(t).strftime('%d.%m. %H:%M') }}, Bewertung {{ as_local(t + timedelta(hours=48)).strftime('%d.%m. %H:%M') }}{% else %}noch kein Schritt gestartet{% endif %}
+      - action: notify.email_alerts
+        data:
+          title: >-
+            Abgleich Nacht {{ nacht_von }}: {{ rows | selectattr('a', 'eq', 'gruen') | list | count }} grün,
+            {{ rows | selectattr('a', 'eq', 'gelb') | list | count }} gelb, {{ rows | selectattr('a', 'eq', 'rot') | list | count }} rot
+          message: >-
+            Nachtwerte 03-05 Uhr: {% for r in rows %}{{ r.n }} {{ r.v | round(1) if r.v is number else '-' }}; {% endfor %}
+            Starts 24 h: {{ starts | int }}.
+          data:
+            html: >
+              {%- macro f1(x, u='') -%}{{ (x | round(1) | string | replace('.', ',') ~ u) if x is number else '–' }}{%- endmacro -%}
+              {%- macro lzf(m) -%}{{ ('–' if m is not number else ((m / 60) | round(1) | string | replace('.', ',') ~ ' h' if m >= 120 else (m | round(0) | int) ~ ' min')) }}{%- endmacro -%}
+              {%- macro dot(a) -%}{%- set c = {'gruen':'#2e7d32','gelb':'#f9a825','rot':'#c62828','grau':'#9e9e9e'}[a] -%}<span style="color:{{ c }};font-size:16px;">&#9679;</span>{%- endmacro -%}
+              {%- set td = 'padding:5px 8px;border-bottom:1px solid #ddd;' -%}
+              {%- set th = 'padding:5px 8px;border-bottom:2px solid #333;text-align:left;' -%}
+              <!DOCTYPE html><html><body style="font-family:Arial,Helvetica,sans-serif;color:#1a1a1a;">
+              <h2 style="margin:0 0 4px 0;">Abgleich – Nacht {{ nacht_von }}</h2>
+              <p style="margin:0 0 12px 0;color:#555;">Median 03–05 Uhr · Außen {{ f1(nacht.aussen if nacht else none, ' °C') }} · {{ schritt_info }}</p>
+              <table style="border-collapse:collapse;width:100%;max-width:520px;">
+              <tr><th style="{{ th }}">Raum</th><th style="{{ th }}">Ziel</th><th style="{{ th }}text-align:right;">Nacht</th><th style="{{ th }}"></th></tr>
+              {%- for r in rows %}
+              <tr>
+                <td style="{{ td }}">{{ r.e }} · {{ r.n }}{% if r.p %} <span style="color:#888;">(Rauchmelder)</span>{% endif %}</td>
+                <td style="{{ td }}color:#555;">{{ f1(r.lo) }}–{{ f1(r.hi) }}</td>
+                <td style="{{ td }}text-align:right;font-weight:bold;">{{ f1(r.v) }}</td>
+                <td style="{{ td }}">{{ dot(r.a) }}</td>
+              </tr>
+              {%- endfor %}
+              </table>
+              <table style="border-collapse:collapse;width:100%;max-width:520px;margin-top:16px;">
+              <tr><th style="{{ th }}">Letzte 24 h</th><th style="{{ th }}text-align:right;">Wert</th></tr>
+              <tr><td style="{{ td }}">Verdichterstarts</td><td style="{{ td }}text-align:right;">{{ starts | int }}</td></tr>
+              <tr><td style="{{ td }}">Laufzeit pro Start</td><td style="{{ td }}text-align:right;">{{ lzf((stunden / starts * 60) if starts > 0 else none) }}</td></tr>
+              <tr><td style="{{ td }}">Spreizung (Mittel, Ziel 4–7 K)</td><td style="{{ td }}text-align:right;">{{ f1(states('sensor.abgleich_spreizung_24h') | float(none), ' K') }}</td></tr>
+              <tr><td style="{{ td }}">COP Heizen</td><td style="{{ td }}text-align:right;">{{ f1((ertrag / strom) if strom > 0 else none) }}</td></tr>
+              <tr><td style="{{ td }}">Schlafzimmer Nacht min. / Feuchte max.</td><td style="{{ td }}text-align:right;">{{ f1(nacht.sz_min if nacht else none, ' °C') }} / {{ f1(nacht.sz_rh_max if nacht else none, ' %') }}</td></tr>
+              </table>
+              <p style="margin:12px 0 0 0;color:#888;font-size:12px;">Ampel: grün im Zielbereich, gelb bis 1 K daneben, rot mehr als 1 K daneben. Einzelne Nächte sind kein Grund für eine Änderung – bewertet wird nach 48 h.</p>
+              </body></html>
+    mode: single

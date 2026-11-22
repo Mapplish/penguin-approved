@@ -219,3 +219,50 @@ views:
           - sensor.waermepumpe_stromverbrauch
           - sensor.waermepumpe_waermeertrag
 
+
+  # Balancing workflow (homeassistant/packages/abgleich.yaml): describe the
+  # step, pick the target room, press "Schritt gestartet" after the change
+  # at the distributor. The verdict mail arrives 48 h later.
+  - title: Abgleich
+    path: abgleich
+    icon: mdi:tune-vertical
+    cards:
+      - type: entities
+        title: Abgleich-Schritt
+        show_header_toggle: false
+        entities:
+          - entity: input_text.abgleich_schritt
+            name: Was wurde geändert?
+          - entity: input_select.abgleich_zielraum
+            name: Zielraum
+          - entity: input_button.abgleich_schritt_gestartet
+            name: Schritt gestartet (Ausgangswerte speichern)
+          - entity: sensor.abgleich_ausgangswerte
+            name: Letzter Schritt
+            format: datetime
+          - entity: sensor.abgleich_bewertung_faellig
+            name: Bewertungs-Mail
+            format: datetime
+          - type: divider
+          - entity: input_button.abgleich_bewertung_jetzt
+            name: Bewertung jetzt senden
+          - entity: input_button.abgleich_tagesbericht_jetzt
+            name: Tagesbericht jetzt senden
+
+      - type: markdown
+        title: Aktuell (Median 48 h)
+        content: |
+          {%- set w = state_attr('sensor.abgleich_aktuell_48h', 'werte') or {} -%}
+          {%- set nr = w.raeume if w.raeume is defined else {} -%}
+          | Raum | Ziel | 48 h | |
+          |:--|:--|--:|:-:|
+          {%- for r in state_attr('sensor.abgleich_raeume', 'rooms') or [] %}
+          {%- set v = nr[r.k] if r.k in nr else none %}
+          {%- if v is number %}
+          {%- set d = (r.lo - v) if v < r.lo else ((v - r.hi) if v > r.hi else 0) %}
+          {%- set a = '🟢' if d == 0 else ('🟡' if d <= 1 else '🔴') %}
+          {%- else %}{% set a = '⚪' %}{% endif %}
+          | {{ r.e }} · {{ r.n }}{{ ' ¹' if r.p }} | {{ r.lo }}–{{ r.hi }} | {{ (v | round(1)) if v is number else '–' }} | {{ a }} |
+          {%- endfor %}
+
+          ¹ Rauchmelder an der Decke, zeigt eher zu viel.

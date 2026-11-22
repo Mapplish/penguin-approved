@@ -1,6 +1,11 @@
 # Loads default set of integrations. Do not remove.
 default_config:
 
+# Feature packages (one file = one self-contained feature, e.g. the
+# balancing evaluation in homeassistant/packages/abgleich*.yaml).
+homeassistant:
+  packages: !include_dir_named homeassistant/packages
+
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes
@@ -14,6 +19,10 @@ scene: !include homeassistant/scenes.yaml
 # card. Hourly long-term statistics are kept forever regardless.
 recorder:
   purge_keep_days: 90
+  exclude:
+    entities:
+      # dict attribute that changes with every sample of ~25 sensors
+      - sensor.abgleich_aktuell_48h
 
 notify:
   - platform: group

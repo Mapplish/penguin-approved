@@ -1,0 +1,526 @@
+# GENERATED room/HP statistics for the balancing evaluation
+# (homeassistant/packages/abgleich.yaml reads these). Entity ids follow
+# sensor.abgleich_<key>_48h / _nacht; the keys must match the room list
+# in sensor.abgleich_raeume. Room -> sensor mapping confirmed by the user
+# 2026-11-22; *_rauchmelder_* sources are ceiling-mounted smoke detectors
+# used as a stand-in until a room thermometer exists (read high).
+#
+# _48h  : rolling 48 h window, compared before/after each balancing step.
+# _nacht: rolling 2 h window, snapshotted at 05:00 -> night value 03-05 h.
+# _24h  : rolling 24 h window for the daily mail.
+# Median/mean are per sample, not time-weighted (good enough here).
+
+sensor:
+  # --- Room temperatures, 48 h median ---
+  - platform: statistics
+    name: "Abgleich Schlafzimmer 48h"
+    unique_id: abgleich_schlafzimmer_48h
+    entity_id: sensor.schlafzimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Buero Gaeste 48h"
+    unique_id: abgleich_buero_gaeste_48h
+    entity_id: sensor.gastezimmer_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Zimmer Weiss 48h"
+    unique_id: abgleich_zimmer_weiss_48h
+    entity_id: sensor.kinderzimmer_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kinderzimmer 48h"
+    unique_id: abgleich_kinderzimmer_48h
+    entity_id: sensor.baby_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Flur OG 48h"
+    unique_id: abgleich_flur_og_48h
+    entity_id: sensor.obergeschoss_flur_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Bad 48h"
+    unique_id: abgleich_bad_48h
+    entity_id: sensor.badezimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Wohnzimmer 48h"
+    unique_id: abgleich_wohnzimmer_48h
+    entity_id: sensor.wohnzimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Esszimmer 48h"
+    unique_id: abgleich_esszimmer_48h
+    entity_id: sensor.esszimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich WC EG 48h"
+    unique_id: abgleich_wc_eg_48h
+    entity_id: sensor.gastewc_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kueche 48h"
+    unique_id: abgleich_kueche_48h
+    entity_id: sensor.kuche_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Eingang 48h"
+    unique_id: abgleich_eingang_48h
+    entity_id: sensor.eingang_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Buero 48h"
+    unique_id: abgleich_buero_48h
+    entity_id: sensor.buro_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kaminzimmer 48h"
+    unique_id: abgleich_kaminzimmer_48h
+    entity_id: sensor.kaminzimmer_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Hobby 48h"
+    unique_id: abgleich_hobby_48h
+    entity_id: sensor.hobbyraum_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Waschkueche 48h"
+    unique_id: abgleich_waschkueche_48h
+    entity_id: sensor.waschraum_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Bar 48h"
+    unique_id: abgleich_bar_48h
+    entity_id: sensor.bar_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Sauna 48h"
+    unique_id: abgleich_sauna_48h
+    entity_id: sensor.sportraum_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  # --- Room temperatures, night median (window 03-05 h at 05:00) ---
+  - platform: statistics
+    name: "Abgleich Schlafzimmer Nacht"
+    unique_id: abgleich_schlafzimmer_nacht
+    entity_id: sensor.schlafzimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Buero Gaeste Nacht"
+    unique_id: abgleich_buero_gaeste_nacht
+    entity_id: sensor.gastezimmer_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Zimmer Weiss Nacht"
+    unique_id: abgleich_zimmer_weiss_nacht
+    entity_id: sensor.kinderzimmer_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kinderzimmer Nacht"
+    unique_id: abgleich_kinderzimmer_nacht
+    entity_id: sensor.baby_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Flur OG Nacht"
+    unique_id: abgleich_flur_og_nacht
+    entity_id: sensor.obergeschoss_flur_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Bad Nacht"
+    unique_id: abgleich_bad_nacht
+    entity_id: sensor.badezimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Wohnzimmer Nacht"
+    unique_id: abgleich_wohnzimmer_nacht
+    entity_id: sensor.wohnzimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Esszimmer Nacht"
+    unique_id: abgleich_esszimmer_nacht
+    entity_id: sensor.esszimmer_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich WC EG Nacht"
+    unique_id: abgleich_wc_eg_nacht
+    entity_id: sensor.gastewc_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kueche Nacht"
+    unique_id: abgleich_kueche_nacht
+    entity_id: sensor.kuche_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Eingang Nacht"
+    unique_id: abgleich_eingang_nacht
+    entity_id: sensor.eingang_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Buero Nacht"
+    unique_id: abgleich_buero_nacht
+    entity_id: sensor.buro_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kaminzimmer Nacht"
+    unique_id: abgleich_kaminzimmer_nacht
+    entity_id: sensor.kaminzimmer_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Hobby Nacht"
+    unique_id: abgleich_hobby_nacht
+    entity_id: sensor.hobbyraum_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Waschkueche Nacht"
+    unique_id: abgleich_waschkueche_nacht
+    entity_id: sensor.waschraum_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Bar Nacht"
+    unique_id: abgleich_bar_nacht
+    entity_id: sensor.bar_temperatur_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Sauna Nacht"
+    unique_id: abgleich_sauna_nacht
+    entity_id: sensor.sportraum_rauchmelder_temperature
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  # --- Schlafzimmer limits, outdoor, heat pump ---
+  - platform: statistics
+    name: "Abgleich Schlafzimmer Min 48h"
+    unique_id: abgleich_schlafzimmer_min_48h
+    entity_id: sensor.schlafzimmer_temperatur_temperature
+    state_characteristic: value_min
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Schlafzimmer Feuchte Max 48h"
+    unique_id: abgleich_schlafzimmer_feuchte_max_48h
+    entity_id: sensor.schlafzimmer_temperatur_humidity
+    state_characteristic: value_max
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Schlafzimmer Min Nacht"
+    unique_id: abgleich_schlafzimmer_min_nacht
+    entity_id: sensor.schlafzimmer_temperatur_temperature
+    state_characteristic: value_min
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Schlafzimmer Feuchte Max Nacht"
+    unique_id: abgleich_schlafzimmer_feuchte_max_nacht
+    entity_id: sensor.schlafzimmer_temperatur_humidity
+    state_characteristic: value_max
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Aussen 48h"
+    unique_id: abgleich_aussen_48h
+    entity_id: sensor.heating_ebusd_broadcast_outsidetemp
+    state_characteristic: mean
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Aussen Nacht"
+    unique_id: abgleich_aussen_nacht
+    entity_id: sensor.heating_ebusd_broadcast_outsidetemp
+    state_characteristic: mean
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Aussen 24h"
+    unique_id: abgleich_aussen_24h
+    entity_id: sensor.heating_ebusd_broadcast_outsidetemp
+    state_characteristic: mean
+    max_age:
+      hours: 24
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Spreizung 48h"
+    unique_id: abgleich_spreizung_48h
+    entity_id: sensor.spreizung_waermepumpe
+    state_characteristic: mean
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Spreizung 24h"
+    unique_id: abgleich_spreizung_24h
+    entity_id: sensor.spreizung_waermepumpe
+    state_characteristic: mean
+    max_age:
+      hours: 24
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Starts 48h"
+    unique_id: abgleich_starts_48h
+    entity_id: sensor.heating_ebusd_hmu_runstatscompressorstarts
+    state_characteristic: change
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Starts 24h"
+    unique_id: abgleich_starts_24h
+    entity_id: sensor.heating_ebusd_hmu_runstatscompressorstarts
+    state_characteristic: change
+    max_age:
+      hours: 24
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kompressorstunden 48h"
+    unique_id: abgleich_kompressorstunden_48h
+    entity_id: sensor.heating_ebusd_hmu_runstatscompressorhours
+    state_characteristic: change
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Kompressorstunden 24h"
+    unique_id: abgleich_kompressorstunden_24h
+    entity_id: sensor.heating_ebusd_hmu_runstatscompressorhours
+    state_characteristic: change
+    max_age:
+      hours: 24
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Strom Heizen 48h"
+    unique_id: abgleich_strom_heizen_48h
+    entity_id: sensor.waermepumpe_strom_heizen_kumuliert
+    state_characteristic: change
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Strom Heizen 24h"
+    unique_id: abgleich_strom_heizen_24h
+    entity_id: sensor.waermepumpe_strom_heizen_kumuliert
+    state_characteristic: change
+    max_age:
+      hours: 24
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Ertrag Heizen 48h"
+    unique_id: abgleich_ertrag_heizen_48h
+    entity_id: sensor.waermepumpe_ertrag_heizen_kumuliert
+    state_characteristic: change
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich Ertrag Heizen 24h"
+    unique_id: abgleich_ertrag_heizen_24h
+    entity_id: sensor.waermepumpe_ertrag_heizen_kumuliert
+    state_characteristic: change
+    max_age:
+      hours: 24
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2

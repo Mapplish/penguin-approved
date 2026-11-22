@@ -42,7 +42,12 @@ INTERNAL_PREFIXES = (
     "heat_pump_cop",
     "compressor_runtime_per_start",
     "next_cover_automation",
+    "abgleich_",
 )
+
+# Feature packages (configuration.yaml -> homeassistant: packages:). Their
+# sensors count as defined just like the ones in configuration.yaml.
+PACKAGES_DIR = HA_DIR / "packages"
 
 
 def ha_slugify(name: str) -> str:
@@ -165,14 +170,17 @@ def main() -> int:
 
     problems.extend(check_lovelace_dashboard_urls(parsed_config))
 
-    config_text = CONFIG_YAML.read_text(encoding="utf-8")
-    defined, unique_ids = extract_defined_sensors(config_text)
+    defined, unique_ids = set(), []
+    for path in [CONFIG_YAML] + sorted(PACKAGES_DIR.glob("*.yaml")):
+        d, u = extract_defined_sensors(path.read_text(encoding="utf-8"))
+        defined |= d
+        unique_ids += [(uid, eid, f"{path.relative_to(REPO_ROOT)}:{ln}") for uid, eid, ln in u]
 
     seen = {}
     for uid, entity_id, line_no in unique_ids:
         if uid in seen:
             problems.append(
-                f"Duplicate unique_id '{uid}' at configuration.yaml:{line_no} "
+                f"Duplicate unique_id '{uid}' at {line_no} "
                 f"(first seen for {seen[uid]})"
             )
         else:
@@ -185,6 +193,9 @@ def main() -> int:
     for ref in sorted(all_refs):
         obj_id = ref.split(".", 1)[1]
         if not obj_id.startswith(INTERNAL_PREFIXES):
+            continue
+        if obj_id.endswith("_"):
+            # prefix of an id built in Jinja ('sensor.abgleich_' ~ key ~ '_48h')
             continue
         if ref not in defined:
             problems.append(
