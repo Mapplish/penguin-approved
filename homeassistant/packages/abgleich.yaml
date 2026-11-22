@@ -128,6 +128,24 @@ template:
         availability: "{{ as_datetime(states('sensor.abgleich_ausgangswerte'), none) is not none }}"
         state: "{{ (as_datetime(states('sensor.abgleich_ausgangswerte')) + timedelta(hours=48)).isoformat() }}"
 
+  # sensor.spreizung_waermepumpe is deliberately unavailable outside steady
+  # heating, and a statistics sensor goes unavailable with its source. This
+  # copy only takes numeric values and keeps the last one in between, so the
+  # 48 h mean covers the heating phases only.
+  - triggers:
+      - trigger: state
+        entity_id: sensor.spreizung_waermepumpe
+    conditions:
+      - condition: template
+        value_template: "{{ is_number(trigger.to_state.state) }}"
+    sensor:
+      - name: "Abgleich Spreizung Heizbetrieb"
+        unique_id: abgleich_spreizung_heizbetrieb
+        unit_of_measurement: "K"
+        state_class: measurement
+        icon: mdi:arrow-expand-vertical
+        state: "{{ trigger.to_state.state | float }}"
+
   # "Before" snapshot, taken when the step button is pressed.
   - triggers:
       - trigger: state

@@ -427,7 +427,7 @@ sensor:
   - platform: statistics
     name: "Abgleich Spreizung 48h"
     unique_id: abgleich_spreizung_48h
-    entity_id: sensor.spreizung_waermepumpe
+    entity_id: sensor.abgleich_spreizung_heizbetrieb
     state_characteristic: mean
     max_age:
       hours: 48
@@ -437,7 +437,7 @@ sensor:
   - platform: statistics
     name: "Abgleich Spreizung 24h"
     unique_id: abgleich_spreizung_24h
-    entity_id: sensor.spreizung_waermepumpe
+    entity_id: sensor.abgleich_spreizung_heizbetrieb
     state_characteristic: mean
     max_age:
       hours: 24
