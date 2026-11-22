@@ -150,7 +150,7 @@ template:
   - triggers:
       - trigger: state
         entity_id: input_button.abgleich_schritt_gestartet
-        not_from: [unavailable, unknown]
+        not_from: [unavailable]
         not_to: [unavailable, unknown]
     sensor:
       - name: "Abgleich Ausgangswerte"
@@ -199,7 +199,7 @@ automation:
         at: sensor.abgleich_bewertung_faellig
       - trigger: state
         entity_id: input_button.abgleich_bewertung_jetzt
-        not_from: [unavailable, unknown]
+        not_from: [unavailable]
         not_to: [unavailable, unknown]
     actions:
       - variables:
@@ -328,7 +328,7 @@ automation:
         at: "07:00:00"
       - trigger: state
         entity_id: input_button.abgleich_tagesbericht_jetzt
-        not_from: [unavailable, unknown]
+        not_from: [unavailable]
         not_to: [unavailable, unknown]
     actions:
       - variables:
