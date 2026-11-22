@@ -30,6 +30,54 @@ ist der Ausgangspunkt für den Abgleich.
 | UG | 8 | 7 | 3,8 |
 | **Gesamt** | 25 | 18 | **≈ 21 (≈ 1,25 m³/h)** |
 
+## Stand 0 (eingestellt 2026-11-22, 10:24)
+
+Start des Abgleichs: alle Kreise offen außer den beiden Schlafzimmer-Kreisen
+OG_01 und OG_06. Die Sollwerte sind eine eigene Schätzung als neutraler
+Startpunkt: ähnliche Durchflüsse je Etage, Bad als Kandidat für den
+Referenzraum großzügig, Büro unverändert. Eric hat alle Kreise eingestellt
+und kontrolliert, jeder Ist-Wert entspricht dem Soll. Raumnamen stammen aus
+Erics Arbeitsdokument „Heizkreise und Referenzraum“ vom 2026-11-22 (noch
+nicht per Rohrverfolgung bestätigt, außer EG_04 = WC). Ab hier wertet
+`docs/ABGLEICH.md` jeden Schritt aus. Die Ausgangswerte wurden am
+2026-11-22 um 10:24 gespeichert.
+
+| Kreis | Raum | 28.10. | **Stand 0** (l/min) |
+|---|---|---|---|
+| OG_01 | Schlafzimmer fensterseitig | 0 | **0 (zu)** |
+| OG_02 | Büro/Gäste bettseitig | 2,5 | **1,5** |
+| OG_03 | Zimmer Weiß | 0,5 | **1,0** |
+| OG_04 | Kinderzimmer Velux | 2,5 | **2,5** |
+| OG_05 | Büro/Gäste türseitig | 0,5 | **1,5** |
+| OG_06 | Schlafzimmer türseitig | 0 | **0 (zu)** |
+| OG_07 | Flur | 0 | **1,0** |
+| OG_08 | Badezimmer | 2 | **3,0** |
+| EG_01 | Wohnzimmer fensterseitig | 1 | **1,5** |
+| EG_02 | Esszimmer kaminseitig | 1,6 | **1,5** |
+| EG_03 | Wohnzimmer Mitte | 1,6 | **1,5** |
+| EG_04 | WC | 0 | **1,0** |
+| EG_05 | Esszimmer Mitte | 1,5 | **1,5** |
+| EG_06 | Küche | 1 | **1,0** |
+| EG_07 | Eingang treppenseitig | 0 | **1,0** |
+| EG_08 | Eingang türseitig | 0 | **1,0** |
+| EG_09 | Büro | 2,5 | **2,5** |
+| UG_01 | Hobbyraum/Werkstatt wandseitig | 0,5 | **0,6** |
+| UG_02 | Hobbyraum/Werkstatt Mitte | 0,5 | **0,6** |
+| UG_03 | Waschküche | 0,6 | **0,6** |
+| UG_04 | Vorrat | 0,6 | **0,6** |
+| UG_05 | Diele treppenseitig | 0 | **0,6** |
+| UG_06 | Bar | 0,5 | **0,6** |
+| UG_07 | WC und Dusche | 0,5 | **0,6** |
+| UG_08 | Sauna | 0,6 | **0,6** |
+| KA_01/02 | Kaminzimmer (Altkreise) | – | Drehventil unverändert |
+
+Summe: EG 12,5 + OG 10,0 + UG 4,8 = **27,8 l/min** (vorher ≈ 21). Mit den
+Kaminkreisen (geschätzt ca. 3 l/min) sind das ≈ 1830 l/h. Das liegt unter
+dem WP-Volumenstrom von ≈ 2050–2090 l/h, die Weiche MPS 40 fließt also
+weiter in die unkritische Richtung. Grenze: ca. 30 l/min an den Verteilern.
+
+Die Tabellen unten zeigen den Stand vom 28.10. und die Beobachtungen davor.
+
 ## EG
 
 | Kreis | Raum | Durchfluss (l/min) | Stellantrieb | Stand | Notiz |
