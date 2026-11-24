@@ -70,68 +70,82 @@
     target:
       entity_id: cover.rollos_eg
   mode: single
-- id: '1764345077517'
-  alias: Weihnachtsbeleuchtung an
-  description: ''
+- id: weihnachtsbeleuchtung_aussen
+  alias: Weihnachtsbeleuchtung aussen
+  description: >-
+    Two outdoor outlets (friendly names "Außen Kühlschrank Steckdose" and
+    "Wohnzimmer Steckdose"; entity_ids are historical). On 1 h before sunset,
+    off at midnight, on again at 05:00, off 1 h after sunrise. On HA start the
+    desired state is recomputed so a restart never leaves the lights wrong.
+    Disable this automation after the Christmas season.
   triggers:
+  - trigger: sun
+    event: sunset
+    offset: '-01:00:00'
+    id: an
   - trigger: time
-    at: '17:00:00'
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-    - sat
-    - sun
+    at: '00:00:00'
+    id: aus
   - trigger: time
-    at: 06:00:00
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-    - sat
-    - sun
+    at: '05:00:00'
+    id: an_morgens
+  - trigger: sun
+    event: sunrise
+    offset: '01:00:00'
+    id: aus
+  - trigger: homeassistant
+    event: start
+    id: start
   conditions: []
   actions:
-  - type: turn_on
-    device_id: 8ca3369b0752a55e4f72e2a0dd8bba0b
-    entity_id: 8728bf30a61737a37ed4bd02f7d12226
-    domain: switch
-  mode: single
-- id: '1764345174084'
-  alias: Weihnachtsbeleuchtung aus
-  description: ''
-  triggers:
-  - trigger: time
-    at: '22:00:00'
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-    - sat
-    - sun
-  - trigger: time
-    at: 08:30:00
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-    - sat
-    - sun
-  conditions: []
-  actions:
-  - type: turn_off
-    device_id: 8ca3369b0752a55e4f72e2a0dd8bba0b
-    entity_id: 8728bf30a61737a37ed4bd02f7d12226
-    domain: switch
-  mode: single
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: trigger
+          id: an
+        - condition: and
+          conditions:
+          - condition: trigger
+            id: an_morgens
+          # summer guard: only if sunrise+1h is still ahead
+          - condition: sun
+            before: sunrise
+            before_offset: '01:00:00'
+        - condition: and
+          conditions:
+          - condition: trigger
+            id: start
+          - condition: or
+            conditions:
+            - condition: sun
+              after: sunset
+              after_offset: '-01:00:00'
+            - condition: and
+              conditions:
+              - condition: time
+                after: '05:00:00'
+              - condition: sun
+                before: sunrise
+                before_offset: '01:00:00'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id:
+          - switch.wohnzimmer_steckdose
+          - switch.wohnzimmer_steckdose_2
+    - conditions:
+      - condition: trigger
+        id:
+        - aus
+        - start
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id:
+          - switch.wohnzimmer_steckdose
+          - switch.wohnzimmer_steckdose_2
+  mode: queued
 - id: '1766943966144'
   alias: Urlaub Rollo Open
   description: ''
