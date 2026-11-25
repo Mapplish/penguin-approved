@@ -31,7 +31,7 @@ viel anzeigt.
 | Büro/Gäste ¹ | Gästezimmer Rauchmelder | 20–21 | Erics Vorgabe „genutzt“ |
 | Zimmer Weiß ¹ | Kinderzimmer Rauchmelder | 20–21 | Erics Vorgabe „genutzt“ |
 | Kinderzimmer Velux | Baby Temperatur | 20–22 | eigene Schätzung |
-| Flur OG ¹ | Obergeschoss Flur Rauchmelder | 17–19 | Recherche |
+| Flur OG ¹ | Obergeschoss Flur Rauchmelder | 20–21 | Erics Vorgabe 2026-11-25: grenzt an alle Räume, wie die übrigen genutzten Räume |
 | Bad | Badezimmer Temperatur | 21–22 | gebräuchlicher Komfortwert |
 | EG (Wohnen, Essen, WC, Küche, Eingang, Kaminzimmer ¹) | jeweiliger Raumsensor | 20–21 | Erics Vorgabe: EG einheitlich |
 | Büro (EG) | Büro Temperatur | 20,5–21,5 | Vorgabe 21 °C; ±0,5 K eigene Wahl |

@@ -73,7 +73,7 @@ template:
               {'k':'buero_gaeste','n':'Büro/Gäste','e':'OG','lo':20,'hi':21,'p':true},
               {'k':'zimmer_weiss','n':'Zimmer Weiß','e':'OG','lo':20,'hi':21,'p':true},
               {'k':'kinderzimmer','n':'Kinderzimmer Velux','e':'OG','lo':20,'hi':22,'p':false},
-              {'k':'flur_og','n':'Flur OG','e':'OG','lo':17,'hi':19,'p':true},
+              {'k':'flur_og','n':'Flur OG','e':'OG','lo':20,'hi':21,'p':true},
               {'k':'bad','n':'Bad','e':'OG','lo':21,'hi':22,'p':false},
               {'k':'wohnzimmer','n':'Wohnzimmer','e':'EG','lo':20,'hi':21,'p':false},
               {'k':'esszimmer','n':'Esszimmer','e':'EG','lo':20,'hi':21,'p':false},
