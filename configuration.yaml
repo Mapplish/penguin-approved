@@ -23,6 +23,10 @@ recorder:
     entities:
       # dict attribute that changes with every sample of ~25 sensors
       - sensor.abgleich_aktuell_48h
+    entity_globs:
+      # 50 per-circuit return medians, updated every minute; only the
+      # balancing mails read them (their sources are recorded anyway)
+      - sensor.abgleich_rl_*
 
 notify:
   - platform: group

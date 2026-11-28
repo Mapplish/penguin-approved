@@ -76,6 +76,33 @@ Hinweise, lautet es „beobachten“. Ist alles erfüllt, lautet es
 „bestätigt“. Ohne gespeicherte Ausgangswerte steht dort „kein
 Ausgangswert“.
 
+## Rücklauf pro Heizkreis (seit 2026-11-28)
+
+Beide Mails zeigen zusätzlich den Rücklauf jedes Heizkreises, gemessen mit
+den Klemmfühlern am Verteiler (`esp-verteiler-hobbyraum`). In der
+Bewertungs-Mail steht der Median über 48 h vorher und nachher mit Δ, im
+Tagesbericht der Nacht-Median von 03–05 Uhr. Die Kreisliste mit Namen und
+Raum steht in `sensor.abgleich_kreise` (`abgleich.yaml`, Quelle:
+`docs/HEIZKREISE.md`, Stand 0).
+
+- **Nur zur Information, nicht Teil des Fazits** [eigen]. Die Klemmfühler
+  zeigen 5–8 K zu wenig, und jeder Fühler hat einen eigenen, unbekannten
+  Offset (siehe `docs/HEIZKREISE.md`). Weil der Vorlauf am Verteiler nicht
+  gemessen wird, lässt sich keine Spreizung pro Kreis berechnen.
+- **Geschlossene Kreise** (OG_01, OG_06) messen nur Fremdwärme von
+  Nachbarrohren und Umgebung. Sie dienen als Referenz: Aussagekräftig ist
+  der Abstand eines offenen Kreises dazu und die Änderung Δ nach einem
+  Schritt [eigen].
+- **Kreise im selben Raum:** Die Mails zeigen den Unterschied (max. − min.)
+  der Rückläufe der offenen Kreise eines Raums. Das Ziel sind gleiche
+  Rückläufe, also eine gleiche Spreizung bei gleichem Vorlauf. Das ist die
+  Grundidee des Abgleichs über die Rücklauftemperatur. Als Schwelle gilt
+  < 1 K [eigen]. Sie wird erst angewendet, wenn die Fühler-Offsets bekannt
+  sind, z. B. durch eine Vergleichsmessung mit einem Kontaktthermometer.
+  Bis dahin zählt nur, ob sich der Unterschied durch einen Schritt
+  verändert.
+- Der Fühler OG_05 ist defekt, deshalb bleibt sein Wert leer.
+
 ## Bekannte Grenzen
 
 - Verdichterstarts, Kompressorstunden und Energie werden als Änderung

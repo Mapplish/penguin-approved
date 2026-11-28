@@ -89,6 +89,46 @@ template:
             ] }}
           ohne_sensor: "{{ ['Vorrat (UG)', 'Diele (UG)', 'WC/Dusche (UG)'] }}"
 
+      # Single source of truth for the heating circuits (return clamp sensors).
+      # k = key of sensor.abgleich_rl_<k>_48h/_nacht, n = circuit name and
+      # g = room (circuits with the same g are compared with each other), from
+      # docs/HEIZKREISE.md "Stand 0". zu = closed on purpose: its reading is
+      # only neighbour/ambient heat and serves as the floor's reference.
+      # Clamp sensors read 5-8 K low, OG_05 is dead (stays empty).
+      - name: "Abgleich Kreise"
+        unique_id: abgleich_kreise
+        icon: mdi:pipe
+        state: "25"
+        attributes:
+          kreise: >
+            {{ [
+              {'k':'og_01','n':'Schlafzimmer fensterseitig','g':'Schlafzimmer','zu':true},
+              {'k':'og_02','n':'Büro/Gäste bettseitig','g':'Büro/Gäste','zu':false},
+              {'k':'og_03','n':'Zimmer Weiß','g':'Zimmer Weiß','zu':false},
+              {'k':'og_04','n':'Kinderzimmer Velux','g':'Kinderzimmer Velux','zu':false},
+              {'k':'og_05','n':'Büro/Gäste türseitig','g':'Büro/Gäste','zu':false},
+              {'k':'og_06','n':'Schlafzimmer türseitig','g':'Schlafzimmer','zu':true},
+              {'k':'og_07','n':'Flur','g':'Flur OG','zu':false},
+              {'k':'og_08','n':'Badezimmer','g':'Bad','zu':false},
+              {'k':'eg_01','n':'Wohnzimmer fensterseitig','g':'Wohnzimmer','zu':false},
+              {'k':'eg_02','n':'Esszimmer kaminseitig','g':'Esszimmer','zu':false},
+              {'k':'eg_03','n':'Wohnzimmer Mitte','g':'Wohnzimmer','zu':false},
+              {'k':'eg_04','n':'WC','g':'WC EG','zu':false},
+              {'k':'eg_05','n':'Esszimmer Mitte','g':'Esszimmer','zu':false},
+              {'k':'eg_06','n':'Küche','g':'Küche','zu':false},
+              {'k':'eg_07','n':'Eingang treppenseitig','g':'Eingang','zu':false},
+              {'k':'eg_08','n':'Eingang türseitig','g':'Eingang','zu':false},
+              {'k':'eg_09','n':'Büro','g':'Büro','zu':false},
+              {'k':'ug_01','n':'Hobbyraum wandseitig','g':'Hobbyraum','zu':false},
+              {'k':'ug_02','n':'Hobbyraum Mitte','g':'Hobbyraum','zu':false},
+              {'k':'ug_03','n':'Waschküche','g':'Waschküche','zu':false},
+              {'k':'ug_04','n':'Vorrat','g':'Vorrat','zu':false},
+              {'k':'ug_05','n':'Diele treppenseitig','g':'Diele UG','zu':false},
+              {'k':'ug_06','n':'Bar','g':'Bar','zu':false},
+              {'k':'ug_07','n':'WC und Dusche','g':'WC/Dusche UG','zu':false},
+              {'k':'ug_08','n':'Sauna','g':'Sauna','zu':false}
+            ] }}
+
       # Current rolling 48 h values as one dict, so the step snapshot and the
       # evaluation share exactly one definition. Excluded from the recorder
       # (configuration.yaml): the attribute changes with every sample.
@@ -109,8 +149,14 @@ template:
               {%- set v = states('sensor.abgleich_' ~ r.k ~ '_48h') -%}
               {%- set ns.p = ns.p + [[r.k, (v | float) if is_number(v) else none]] -%}
             {%- endfor -%}
+            {%- set rl = namespace(p=[]) -%}
+            {%- for c in state_attr('sensor.abgleich_kreise', 'kreise') or [] -%}
+              {%- set v = states('sensor.abgleich_rl_' ~ c.k ~ '_48h') -%}
+              {%- set rl.p = rl.p + [[c.k, (v | float) if is_number(v) else none]] -%}
+            {%- endfor -%}
             {{ {
               'raeume': dict(ns.p),
+              'rl': dict(rl.p),
               'sz_min': states('sensor.abgleich_schlafzimmer_min_48h') | float(none),
               'sz_rh_max': states('sensor.abgleich_schlafzimmer_feuchte_max_48h') | float(none),
               'aussen': states('sensor.abgleich_aussen_48h') | float(none),
@@ -181,8 +227,14 @@ template:
               {%- set v = states('sensor.abgleich_' ~ r.k ~ '_nacht') -%}
               {%- set ns.p = ns.p + [[r.k, (v | float) if is_number(v) else none]] -%}
             {%- endfor -%}
+            {%- set rl = namespace(p=[]) -%}
+            {%- for c in state_attr('sensor.abgleich_kreise', 'kreise') or [] -%}
+              {%- set v = states('sensor.abgleich_rl_' ~ c.k ~ '_nacht') -%}
+              {%- set rl.p = rl.p + [[c.k, (v | float) if is_number(v) else none]] -%}
+            {%- endfor -%}
             {{ {
               'raeume': dict(ns.p),
+              'rl': dict(rl.p),
               'sz_min': states('sensor.abgleich_schlafzimmer_min_nacht') | float(none),
               'sz_rh_max': states('sensor.abgleich_schlafzimmer_feuchte_max_nacht') | float(none),
               'aussen': states('sensor.abgleich_aussen_nacht') | float(none)
@@ -264,6 +316,28 @@ automation:
             {%- set fazit = 'kein Ausgangswert' if not vor else ('zurücknehmen' if ns.fail else ('beobachten' if ns.warn else 'bestätigt')) -%}
             {{ {'rows': ns.rows, 'fail': ns.fail, 'warn': ns.warn, 'fazit': fazit,
                 'stv': stv, 'stn': stn, 'lz': lz, 'spannen': dict(spannen.t)} }}
+          # Return per circuit: information only, never part of the verdict
+          # (clamp sensors read 5-8 K low with unknown per-sensor offsets).
+          # paare = spread of the open circuits that heat the same room.
+          kreise: >
+            {%- set vr = vor.rl if vor and vor.rl is defined else {} -%}
+            {%- set nr = nach.rl if nach and nach.rl is defined else {} -%}
+            {%- set kl = state_attr('sensor.abgleich_kreise', 'kreise') or [] -%}
+            {%- set ns = namespace(rows=[], paare=[]) -%}
+            {%- for c in kl -%}
+              {%- set ns.rows = ns.rows + [dict(c, b=(vr[c.k] if c.k in vr else none), v=(nr[c.k] if c.k in nr else none))] -%}
+            {%- endfor -%}
+            {%- for g in kl | map(attribute='g') | unique -%}
+              {%- set grp = ns.rows | selectattr('g', 'eq', g) | rejectattr('zu') | list -%}
+              {%- if grp | count > 1 -%}
+                {%- set bv = grp | map(attribute='b') | select('number') | list -%}
+                {%- set nv = grp | map(attribute='v') | select('number') | list -%}
+                {%- set ns.paare = ns.paare + [{'g': g, 'k': grp | map(attribute='k') | map('upper') | join(' / '),
+                    'b': ((bv | max) - (bv | min)) if bv | count > 1 else none,
+                    'v': ((nv | max) - (nv | min)) if nv | count > 1 else none}] -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {{ {'rows': ns.rows, 'paare': ns.paare} }}
       - action: notify.email_alerts
         data:
           title: "Abgleich: {{ schritt }} – {{ ergebnis.fazit }}"
@@ -314,6 +388,33 @@ automation:
               <tr><td style="{{ td }}">Schlafzimmer Minimum (≥ 16 °C)</td><td style="{{ td }}text-align:right;">{{ f1(vor.sz_min if vor else none, ' °C') }}</td><td style="{{ td }}text-align:right;">{{ f1(nach.sz_min, ' °C') }}</td></tr>
               <tr><td style="{{ td }}">Schlafzimmer Feuchte max. (&lt; 60 %)</td><td style="{{ td }}text-align:right;">{{ f1(vor.sz_rh_max if vor else none, ' %') }}</td><td style="{{ td }}text-align:right;">{{ f1(nach.sz_rh_max, ' %') }}</td></tr>
               </table>
+              {%- macro sg(x) -%}{{ (('+' if x > 0 else '') ~ (x | round(1) | string | replace('.', ',')) ~ ' K') if x is number else '–' }}{%- endmacro %}
+              <h3 style="margin:20px 0 4px 0;">Rücklauf pro Heizkreis (Median 48 h)</h3>
+              <p style="margin:0 0 6px 0;color:#888;font-size:12px;">Nur zur Information, fließt nicht ins Fazit. Die Klemmfühler zeigen 5–8 K zu wenig und jeder Fühler hat einen eigenen, unbekannten Offset. Aussagekräftig sind die Änderung Δ und der Abstand zu den geschlossenen Kreisen („zu“: misst nur Fremdwärme). Der Vorlauf am Verteiler wird nicht gemessen.</p>
+              <table style="border-collapse:collapse;width:100%;max-width:560px;">
+              <tr><th style="{{ th }}">Kreis</th><th style="{{ th }}text-align:right;">vorher</th><th style="{{ th }}text-align:right;">nachher</th><th style="{{ th }}text-align:right;">Δ</th></tr>
+              {%- for c in kreise.rows %}
+              <tr>
+                <td style="{{ td }}">{{ c.k | upper }} · {{ c.n }}{% if c.zu %} <span style="color:#888;">(zu)</span>{% endif %}</td>
+                <td style="{{ td }}text-align:right;color:#555;">{{ f1(c.b) }}</td>
+                <td style="{{ td }}text-align:right;font-weight:bold;">{{ f1(c.v) }}</td>
+                <td style="{{ td }}text-align:right;">{{ sg((c.v - c.b) if c.v is number and c.b is number else none) }}</td>
+              </tr>
+              {%- endfor %}
+              </table>
+              <h3 style="margin:20px 0 4px 0;">Kreise im selben Raum: Unterschied der Rückläufe</h3>
+              <table style="border-collapse:collapse;width:100%;max-width:560px;">
+              <tr><th style="{{ th }}">Raum</th><th style="{{ th }}">Kreise</th><th style="{{ th }}text-align:right;">vorher</th><th style="{{ th }}text-align:right;">nachher</th></tr>
+              {%- for p in kreise.paare %}
+              <tr>
+                <td style="{{ td }}">{{ p.g }}</td>
+                <td style="{{ td }}color:#555;">{{ p.k }}</td>
+                <td style="{{ td }}text-align:right;color:#555;">{{ f1(p.b, ' K') }}</td>
+                <td style="{{ td }}text-align:right;font-weight:bold;">{{ f1(p.v, ' K') }}</td>
+              </tr>
+              {%- endfor %}
+              </table>
+              <p style="margin:6px 0 0 0;color:#888;font-size:12px;">Ziel: unter 1 K, aber erst bewertbar, wenn die Fühler-Offsets bekannt sind. Bis dahin zählt vor allem, ob sich der Unterschied durch einen Schritt verändert.</p>
               <p style="margin:12px 0 0 0;color:#888;font-size:12px;">Ampel: grün im Zielbereich, gelb bis 1 K daneben, rot mehr als 1 K daneben. Regeln: docs/ABGLEICH.md. Nur Empfehlung – geändert wird ausschließlich von Hand.</p>
               </body></html>
     mode: single
@@ -349,6 +450,22 @@ automation:
               {%- set ns.rows = ns.rows + [dict(r, v=v, a=a)] -%}
             {%- endfor -%}
             {{ ns.rows }}
+          kreise: >
+            {%- set nr = nacht.rl if nacht and nacht.rl is defined else {} -%}
+            {%- set kl = state_attr('sensor.abgleich_kreise', 'kreise') or [] -%}
+            {%- set ns = namespace(rows=[], paare=[]) -%}
+            {%- for c in kl -%}
+              {%- set ns.rows = ns.rows + [dict(c, v=(nr[c.k] if c.k in nr else none))] -%}
+            {%- endfor -%}
+            {%- for g in kl | map(attribute='g') | unique -%}
+              {%- set grp = ns.rows | selectattr('g', 'eq', g) | rejectattr('zu') | list -%}
+              {%- set nv = grp | map(attribute='v') | select('number') | list -%}
+              {%- if grp | count > 1 -%}
+                {%- set ns.paare = ns.paare + [{'g': g, 'k': grp | map(attribute='k') | map('upper') | join(' / '),
+                    'v': ((nv | max) - (nv | min)) if nv | count > 1 else none}] -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {{ {'rows': ns.rows, 'paare': ns.paare} }}
           starts: "{{ states('sensor.abgleich_starts_24h') | float(0) }}"
           stunden: "{{ states('sensor.abgleich_kompressorstunden_24h') | float(0) }}"
           strom: "{{ states('sensor.abgleich_strom_heizen_24h') | float(0) }}"
@@ -393,6 +510,21 @@ automation:
               <tr><td style="{{ td }}">COP Heizen</td><td style="{{ td }}text-align:right;">{{ f1((ertrag / strom) if strom > 0 else none) }}</td></tr>
               <tr><td style="{{ td }}">Schlafzimmer Nacht min. / Feuchte max.</td><td style="{{ td }}text-align:right;">{{ f1(nacht.sz_min if nacht else none, ' °C') }} / {{ f1(nacht.sz_rh_max if nacht else none, ' %') }}</td></tr>
               </table>
+              <h3 style="margin:20px 0 4px 0;">Rücklauf pro Heizkreis (Median 03–05 Uhr)</h3>
+              <p style="margin:0 0 6px 0;color:#888;font-size:12px;">Nur Information. Die Klemmfühler zeigen 5–8 K zu wenig, mit unbekanntem Offset je Fühler. „zu“ = geschlossener Kreis, misst nur Fremdwärme.</p>
+              <table style="border-collapse:collapse;width:100%;max-width:520px;">
+              <tr><th style="{{ th }}">Kreis</th><th style="{{ th }}text-align:right;">Nacht</th></tr>
+              {%- for c in kreise.rows %}
+              <tr><td style="{{ td }}">{{ c.k | upper }} · {{ c.n }}{% if c.zu %} <span style="color:#888;">(zu)</span>{% endif %}</td><td style="{{ td }}text-align:right;font-weight:bold;">{{ f1(c.v) }}</td></tr>
+              {%- endfor %}
+              </table>
+              <table style="border-collapse:collapse;width:100%;max-width:520px;margin-top:16px;">
+              <tr><th style="{{ th }}">Kreise im selben Raum</th><th style="{{ th }}">Kreise</th><th style="{{ th }}text-align:right;">Unterschied</th></tr>
+              {%- for p in kreise.paare %}
+              <tr><td style="{{ td }}">{{ p.g }}</td><td style="{{ td }}color:#555;">{{ p.k }}</td><td style="{{ td }}text-align:right;font-weight:bold;">{{ f1(p.v, ' K') }}</td></tr>
+              {%- endfor %}
+              </table>
+              <p style="margin:6px 0 0 0;color:#888;font-size:12px;">Ziel unter 1 K, bewertbar erst mit bekannten Fühler-Offsets.</p>
               <p style="margin:12px 0 0 0;color:#888;font-size:12px;">Ampel: grün im Zielbereich, gelb bis 1 K daneben, rot mehr als 1 K daneben. Einzelne Nächte sind kein Grund für eine Änderung – bewertet wird nach 48 h.</p>
               </body></html>
     mode: single

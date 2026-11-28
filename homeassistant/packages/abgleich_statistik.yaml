@@ -524,3 +524,508 @@ sensor:
     sampling_size: 5000
     keep_last_sample: true
     precision: 2
+
+  # --- Per-circuit return temperatures (clamp sensors on the distributors) ---
+  # Median per circuit; list/names in sensor.abgleich_kreise (abgleich.yaml).
+  # ESPHome sends one averaged value per minute, so per-sample = time-weighted.
+  # Excluded from the recorder (configuration.yaml): only the mails need them.
+  - platform: statistics
+    name: "Abgleich RL EG 01 48h"
+    unique_id: abgleich_rl_eg_01_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_01_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 01 Nacht"
+    unique_id: abgleich_rl_eg_01_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_01_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 02 48h"
+    unique_id: abgleich_rl_eg_02_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_02_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 02 Nacht"
+    unique_id: abgleich_rl_eg_02_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_02_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 03 48h"
+    unique_id: abgleich_rl_eg_03_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_03_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 03 Nacht"
+    unique_id: abgleich_rl_eg_03_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_03_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 04 48h"
+    unique_id: abgleich_rl_eg_04_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_04_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 04 Nacht"
+    unique_id: abgleich_rl_eg_04_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_04_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 05 48h"
+    unique_id: abgleich_rl_eg_05_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_05_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 05 Nacht"
+    unique_id: abgleich_rl_eg_05_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_05_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 06 48h"
+    unique_id: abgleich_rl_eg_06_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_06_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 06 Nacht"
+    unique_id: abgleich_rl_eg_06_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_06_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 07 48h"
+    unique_id: abgleich_rl_eg_07_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_07_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 07 Nacht"
+    unique_id: abgleich_rl_eg_07_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_07_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 08 48h"
+    unique_id: abgleich_rl_eg_08_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_08_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 08 Nacht"
+    unique_id: abgleich_rl_eg_08_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_08_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 09 48h"
+    unique_id: abgleich_rl_eg_09_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_09_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL EG 09 Nacht"
+    unique_id: abgleich_rl_eg_09_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_eg_09_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 01 48h"
+    unique_id: abgleich_rl_og_01_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_01_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 01 Nacht"
+    unique_id: abgleich_rl_og_01_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_01_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 02 48h"
+    unique_id: abgleich_rl_og_02_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_02_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 02 Nacht"
+    unique_id: abgleich_rl_og_02_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_02_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 03 48h"
+    unique_id: abgleich_rl_og_03_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_03_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 03 Nacht"
+    unique_id: abgleich_rl_og_03_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_03_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 04 48h"
+    unique_id: abgleich_rl_og_04_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_04_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 04 Nacht"
+    unique_id: abgleich_rl_og_04_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_04_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 05 48h"
+    unique_id: abgleich_rl_og_05_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_05_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 05 Nacht"
+    unique_id: abgleich_rl_og_05_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_05_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 06 48h"
+    unique_id: abgleich_rl_og_06_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_06_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 06 Nacht"
+    unique_id: abgleich_rl_og_06_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_06_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 07 48h"
+    unique_id: abgleich_rl_og_07_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_07_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 07 Nacht"
+    unique_id: abgleich_rl_og_07_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_07_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 08 48h"
+    unique_id: abgleich_rl_og_08_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_og_08_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL OG 08 Nacht"
+    unique_id: abgleich_rl_og_08_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_og_08_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 01 48h"
+    unique_id: abgleich_rl_ug_01_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_01_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 01 Nacht"
+    unique_id: abgleich_rl_ug_01_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_01_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 02 48h"
+    unique_id: abgleich_rl_ug_02_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_02_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 02 Nacht"
+    unique_id: abgleich_rl_ug_02_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_02_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 03 48h"
+    unique_id: abgleich_rl_ug_03_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_03_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 03 Nacht"
+    unique_id: abgleich_rl_ug_03_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_03_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 04 48h"
+    unique_id: abgleich_rl_ug_04_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_04_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 04 Nacht"
+    unique_id: abgleich_rl_ug_04_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_04_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 05 48h"
+    unique_id: abgleich_rl_ug_05_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_05_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 05 Nacht"
+    unique_id: abgleich_rl_ug_05_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_05_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 06 48h"
+    unique_id: abgleich_rl_ug_06_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_06_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 06 Nacht"
+    unique_id: abgleich_rl_ug_06_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_06_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 07 48h"
+    unique_id: abgleich_rl_ug_07_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_07_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 07 Nacht"
+    unique_id: abgleich_rl_ug_07_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_07_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 08 48h"
+    unique_id: abgleich_rl_ug_08_48h
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_08_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 48
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
+  - platform: statistics
+    name: "Abgleich RL UG 08 Nacht"
+    unique_id: abgleich_rl_ug_08_nacht
+    entity_id: sensor.esp_verteiler_hobbyraum_ug_08_ruecklauf
+    state_characteristic: median
+    max_age:
+      hours: 2
+    sampling_size: 5000
+    keep_last_sample: true
+    precision: 2
