@@ -76,6 +76,18 @@ Kaminkreisen (geschätzt ca. 3 l/min) sind das ≈ 1830 l/h. Das liegt unter
 dem WP-Volumenstrom von ≈ 2050–2090 l/h, die Weiche MPS 40 fließt also
 weiter in die unkritische Richtung. Grenze: ca. 30 l/min an den Verteilern.
 
+## Schritte nach Stand 0
+
+Jeder Schritt ist genau eine Änderung, bewertet nach 48 h (`docs/ABGLEICH.md`).
+
+| Nr. | Datum | Änderung | Grund | Summe danach |
+|---|---|---|---|---|
+| 1 | 2026-11-28 | OG_04 Kinderzimmer Velux 2,5 → **2,0** l/min | Raum lag 48 h im Median bei 22,6 °C, nachts bei 23,1 °C und stieg weiter (Ziel 20–22 °C). Der Rücklauf war mit 24,7 °C einer der höchsten (Analyse 21.–28.11.). | OG 9,5 · gesamt 27,3 l/min |
+
+Kontrolle der UG-Kreise am 2026-11-28: Alle Anzeiger stehen auf 0,5–0,6 l/min,
+also wie bei Stand 0. Nichts wurde nachgestellt. Der Temperaturabfall im UG
+seit Stand 0 kommt also nicht daher, dass sich die Ventile verstellt haben.
+
 Die Tabellen unten zeigen den Stand vom 28.10. und die Beobachtungen davor.
 
 ## EG
